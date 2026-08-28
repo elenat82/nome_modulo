@@ -1,0 +1,7 @@
+nome_modulo.forecast:
+  path: '/weather'
+  defaults:
+    _controller: '\Drupal\nome_modulo\Controller\ForecastController::build'
+    _title: 'Weather forecast'
+  requirements:
+    _permission: 'access content'
