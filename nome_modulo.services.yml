@@ -1,0 +1,5 @@
+services:
+  nome_modulo.forecast_client:
+    class: Drupal\nome_modulo\Service\ForecastClient
+
+  Drupal\nome_modulo\Service\ForecastClientInterface: '@nome_modulo.forecast_client'
