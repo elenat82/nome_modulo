@@ -20,6 +20,7 @@ final class ForecastPageTest extends BrowserTestBase {
    */
   protected static $modules = [
     'nome_modulo',
+    'nome_modulo_test',
   ];
 
   /**

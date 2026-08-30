@@ -1,5 +1,7 @@
 services:
   nome_modulo.forecast_client:
     class: Drupal\nome_modulo\Service\ForecastClient
+    arguments:
+    - '@http_client'
 
   Drupal\nome_modulo\Service\ForecastClientInterface: '@nome_modulo.forecast_client'

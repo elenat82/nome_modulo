@@ -1,0 +1,7 @@
+name: 'Nome Modulo Test'
+type: module
+description: 'Provides test doubles for Nome Modulo.'
+package: Testing
+core_version_requirement: ^11
+dependencies:
+  - nome_modulo:nome_modulo
