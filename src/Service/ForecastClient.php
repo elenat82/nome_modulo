@@ -31,8 +31,16 @@ final class ForecastClient implements ForecastClientInterface {
   ) {}
 
   /**
-   * {@inheritdoc}
-   */
+ * Retrieves the current weather forecast from Open-Meteo.
+ *
+ * Uses the configured latitude and longitude to request the current
+ * temperature and weather code from the Open-Meteo API.
+ *
+ * @return array
+ *   The forecast data, containing:
+ *   - temperature: The current temperature.
+ *   - weather_code: The Open-Meteo weather condition code.
+ */
   public function getForecast(): array {
     $config = $this->configFactory->get('nome_modulo.settings');
 
