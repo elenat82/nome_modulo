@@ -1,0 +1,10 @@
+nome_modulo.settings:
+  type: config_object
+  label: 'Nome Modulo settings'
+  mapping:
+    latitude:
+      type: float
+      label: 'Latitude'
+    longitude:
+      type: float
+      label: 'Longitude'

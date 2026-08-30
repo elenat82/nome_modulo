@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\nome_modulo\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use GuzzleHttp\ClientInterface;
 
 /**
@@ -17,33 +18,31 @@ final class ForecastClient implements ForecastClientInterface {
   private const API_URL = 'https://api.open-meteo.com/v1/forecast';
 
   /**
-   * Temporary latitude used during development.
-   */
-  private const LATITUDE = 41.9028;
-
-  /**
-   * Temporary longitude used during development.
-   */
-  private const LONGITUDE = 12.4964;
-
-  /**
    * Constructs a ForecastClient object.
    *
    * @param \GuzzleHttp\ClientInterface $httpClient
    *   The HTTP client.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The configuration factory.
    */
   public function __construct(
     private readonly ClientInterface $httpClient,
+    private readonly ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
    * {@inheritdoc}
    */
   public function getForecast(): array {
+    $config = $this->configFactory->get('nome_modulo.settings');
+
+    $latitude = (float) $config->get('latitude');
+    $longitude = (float) $config->get('longitude');
+
     $response = $this->httpClient->request('GET', self::API_URL, [
       'query' => [
-        'latitude' => self::LATITUDE,
-        'longitude' => self::LONGITUDE,
+        'latitude' => $latitude,
+        'longitude' => $longitude,
         'current' => 'temperature_2m,weather_code',
         'timezone' => 'auto',
       ],

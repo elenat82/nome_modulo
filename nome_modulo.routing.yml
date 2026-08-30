@@ -5,3 +5,10 @@ nome_modulo.forecast:
     _title: 'Weather forecast'
   requirements:
     _permission: 'access content'
+nome_modulo.settings:
+  path: '/admin/config/services/nome-modulo'
+  defaults:
+    _form: '\Drupal\nome_modulo\Form\SettingsForm'
+    _title: 'Weather forecast settings'
+  requirements:
+    _permission: 'administer site configuration'

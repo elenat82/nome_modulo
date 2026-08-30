@@ -3,5 +3,6 @@ services:
     class: Drupal\nome_modulo\Service\ForecastClient
     arguments:
     - '@http_client'
+    - '@config.factory'
 
   Drupal\nome_modulo\Service\ForecastClientInterface: '@nome_modulo.forecast_client'
