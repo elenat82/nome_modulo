@@ -44,7 +44,7 @@ final class SettingsFormTest extends BrowserTestBase {
    */
   public function testSettingsForm(): void {
     $account = $this->drupalCreateUser([
-      'administer site configuration',
+      'administer weather forecast settings',
     ]);
     $this->drupalLogin($account);
 

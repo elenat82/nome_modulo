@@ -11,4 +11,4 @@ nome_modulo.settings:
     _form: '\Drupal\nome_modulo\Form\SettingsForm'
     _title: 'Weather forecast settings'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer weather forecast settings'

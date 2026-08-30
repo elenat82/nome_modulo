@@ -1,0 +1,4 @@
+administer weather forecast settings:
+  title: 'Administer weather forecast settings'
+  description: 'Configure the location used to retrieve weather forecast data.'
+  restrict access: true

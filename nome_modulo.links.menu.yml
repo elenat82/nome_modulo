@@ -1,0 +1,5 @@
+nome_modulo.settings:
+  title: 'Weather forecast'
+  description: 'Configure weather forecast settings.'
+  route_name: nome_modulo.settings
+  parent: system.admin_config_services
