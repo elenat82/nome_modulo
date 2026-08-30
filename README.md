@@ -91,6 +91,20 @@ From the Drupal project root:
 ddev exec ./vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/custom/nome_modulo
 ```
 
+To automatically fix supported coding standard violations across the module, run:
+
+```bash
+ddev exec ./vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/custom/nome_modulo
+```
+
+After running PHP Code Beautifier and Fixer, review the changes with:
+
+```bash
+git diff
+```
+
+and run PHP_CodeSniffer again to verify that no violations remain.
+
 ## Testing
 
 Functional tests are implemented with Drupal's `BrowserTestBase`.
