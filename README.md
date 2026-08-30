@@ -85,16 +85,16 @@ Additional development tooling will be introduced as the project evolves, includ
 
 The module follows Drupal coding standards and is checked with PHP_CodeSniffer and Drupal Coder.
 
-From the Drupal project root:
+From anywhere inside the DDEV project, run:
 
 ```bash
-ddev exec ./vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/custom/nome_modulo
+ddev exec --dir /var/www/html/web/modules/custom/nome_modulo /var/www/html/vendor/bin/phpcs
 ```
 
-To automatically fix supported coding standard violations across the module, run:
+To automatically fix supported coding standard violations, run:
 
 ```bash
-ddev exec ./vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/custom/nome_modulo
+ddev exec --dir /var/www/html/web/modules/custom/nome_modulo /var/www/html/vendor/bin/phpcbf
 ```
 
 After running PHP Code Beautifier and Fixer, review the changes with:
@@ -104,6 +104,8 @@ git diff
 ```
 
 and run PHP_CodeSniffer again to verify that no violations remain.
+
+The project's PHP_CodeSniffer rules are defined in phpcs.xml.dist.
 
 ## Testing
 

@@ -24,14 +24,14 @@ final class ForecastController extends ControllerBase {
   ) {}
 
   /**
- * Creates a ForecastController instance.
- *
- * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
- *   The service container.
- *
- * @return static
- *   A new ForecastController instance.
- */
+   * Creates a ForecastController instance.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The service container.
+   *
+   * @return static
+   *   A new ForecastController instance.
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get(ForecastClientInterface::class),

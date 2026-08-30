@@ -18,21 +18,21 @@ final class SettingsForm extends ConfigFormBase {
   private const CONFIG_NAME = 'nome_modulo.settings';
 
   /**
- * Returns the unique ID of the settings form.
- *
- * @return string
- *   The form ID.
- */
+   * Returns the unique ID of the settings form.
+   *
+   * @return string
+   *   The form ID.
+   */
   public function getFormId(): string {
     return 'nome_modulo_settings';
   }
 
   /**
- * Returns the configuration objects editable by this form.
- *
- * @return string[]
- *   The editable configuration object names.
- */
+   * Returns the configuration objects editable by this form.
+   *
+   * @return string[]
+   *   The editable configuration object names.
+   */
   protected function getEditableConfigNames(): array {
     return [
       self::CONFIG_NAME,
@@ -40,19 +40,19 @@ final class SettingsForm extends ConfigFormBase {
   }
 
   /**
- * Builds the module settings form.
- *
- * Provides fields for configuring the latitude and longitude used to retrieve
- * weather forecast data.
- *
- * @param array $form
- *   The form structure.
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- *   The current state of the form.
- *
- * @return array
- *   The complete form structure.
- */
+   * Builds the module settings form.
+   *
+   * Provides fields for configuring the latitude and longitude used to retrieve
+   * weather forecast data.
+   *
+   * @param array $form
+   *   The form structure.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The complete form structure.
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['latitude'] = [
       '#type' => 'number',
