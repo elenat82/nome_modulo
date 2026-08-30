@@ -2,6 +2,6 @@ name: 'Nome Modulo Test'
 type: module
 description: 'Provides test doubles for Nome Modulo.'
 package: Testing
-core_version_requirement: ^11
+core_version_requirement: ^11.1
 dependencies:
   - nome_modulo:nome_modulo

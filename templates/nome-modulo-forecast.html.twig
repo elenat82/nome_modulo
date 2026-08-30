@@ -1,0 +1,18 @@
+<div class="weather-forecast">
+  <p>
+    {{ 'Current temperature:'|t }}
+    <strong>{{ temperature }} °C</strong>
+  </p>
+
+  <p>
+    {{ 'Weather code:'|t }}
+    <strong>{{ weather_code }}</strong>
+  </p>
+
+  <p class="weather-forecast__attribution">
+    {{ 'Weather data by'|t }}
+    <a href="https://open-meteo.com/" rel="noopener noreferrer">
+      Open-Meteo.com
+    </a>
+  </p>
+</div>

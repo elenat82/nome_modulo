@@ -48,12 +48,9 @@ final class ForecastController extends ControllerBase {
     $forecast = $this->forecastClient->getForecast();
 
     return [
-      '#markup' => $this->t(
-        'Current temperature: @temperature °C',
-        [
-          '@temperature' => $forecast['temperature'],
-        ],
-      ),
+      '#theme' => 'nome_modulo_forecast',
+      '#temperature' => $forecast['temperature'],
+      '#weather_code' => $forecast['weather_code'],
     ];
   }
 
