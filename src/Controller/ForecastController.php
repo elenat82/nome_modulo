@@ -51,6 +51,11 @@ final class ForecastController extends ControllerBase {
       '#theme' => 'nome_modulo_forecast',
       '#temperature' => $forecast['temperature'],
       '#weather_code' => $forecast['weather_code'],
+      '#attached' => [
+        'library' => [
+          'nome_modulo/forecast',
+        ],
+      ],
     ];
   }
 

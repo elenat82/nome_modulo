@@ -1,0 +1,18 @@
+.weather-forecast {
+  max-width: 32rem;
+  padding: 1.5rem;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+}
+
+.weather-forecast__temperature {
+  font-size: 1.25rem;
+}
+
+.weather-forecast__unit-toggle {
+  margin-left: 0.5rem;
+}
+
+.weather-forecast__attribution {
+  margin-top: 1.5rem;
+}

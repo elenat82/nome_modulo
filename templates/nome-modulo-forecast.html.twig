@@ -1,7 +1,20 @@
-<div class="weather-forecast">
-  <p>
+<div
+  class="weather-forecast"
+  data-temperature-celsius="{{ temperature }}"
+>
+  <p class="weather-forecast__temperature-wrapper">
     {{ 'Current temperature:'|t }}
-    <strong>{{ temperature }} °C</strong>
+    <strong class="weather-forecast__temperature">
+      {{ temperature }} °C
+    </strong>
+
+    <button
+      type="button"
+      class="weather-forecast__unit-toggle"
+      aria-pressed="false"
+    >
+      {{ 'Show °F'|t }}
+    </button>
   </p>
 
   <p>
@@ -9,10 +22,10 @@
     <strong>{{ weather_code }}</strong>
   </p>
 
-  <p class="weather-forecast__attribution">
+  <small class="weather-forecast__attribution">
     {{ 'Weather data by'|t }}
     <a href="https://open-meteo.com/" rel="noopener noreferrer">
       Open-Meteo.com
     </a>
-  </p>
+  </small>
 </div>

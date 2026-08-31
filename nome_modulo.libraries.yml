@@ -1,0 +1,9 @@
+forecast:
+  css:
+    component:
+      css/forecast.css: {}
+  js:
+    js/forecast.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

@@ -56,6 +56,15 @@ final class ForecastPageTest extends BrowserTestBase {
     $this->assertSession()->pageTextContains('Current temperature: 20 °C');
     $this->assertSession()->pageTextContains('Weather code: 0');
     $this->assertSession()->elementExists('css', '.weather-forecast');
+    $this->assertSession()->elementExists(
+    'css',
+    '.weather-forecast__temperature',
+    );
+    $this->assertSession()->elementExists(
+    'css',
+    '.weather-forecast__unit-toggle',
+    );
+    $this->assertSession()->buttonExists('Show °F');
   }
 
 }
