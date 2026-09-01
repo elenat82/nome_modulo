@@ -4,11 +4,12 @@ nome_modulo.forecast:
     _controller: '\Drupal\nome_modulo\Controller\ForecastController::build'
     _title: 'Weather forecast'
   requirements:
-    _permission: 'access content'
+    _permission: 'view weather forecast'
+
 nome_modulo.settings:
   path: '/admin/config/services/nome-modulo'
   defaults:
     _form: '\Drupal\nome_modulo\Form\SettingsForm'
     _title: 'Weather forecast settings'
   requirements:
-    _permission: 'administer weather forecast settings'
+    _permission: 'administer weather settings'

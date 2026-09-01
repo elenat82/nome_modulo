@@ -45,7 +45,7 @@ final class ForecastPageTest extends BrowserTestBase {
    */
   public function testForecastPageWithPermission(): void {
     $account = $this->drupalCreateUser([
-      'access content',
+      'view weather forecast',
     ]);
     $this->drupalLogin($account);
 

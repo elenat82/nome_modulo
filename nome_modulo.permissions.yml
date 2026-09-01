@@ -1,4 +1,8 @@
-administer weather forecast settings:
-  title: 'Administer weather forecast settings'
-  description: 'Configure the location used to retrieve weather forecast data.'
+view weather forecast:
+  title: 'View weather forecast'
+  description: 'View the weather forecast provided by Nome Modulo.'
+
+administer weather settings:
+  title: 'Administer weather settings'
+  description: 'Change the weather provider and forecast settings.'
   restrict access: true
