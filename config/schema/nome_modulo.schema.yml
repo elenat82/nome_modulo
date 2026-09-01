@@ -2,9 +2,21 @@ nome_modulo.settings:
   type: config_object
   label: 'Nome Modulo settings'
   mapping:
+    location:
+      type: string
+      label: 'Location'
     latitude:
       type: float
       label: 'Latitude'
     longitude:
       type: float
       label: 'Longitude'
+    timezone:
+      type: string
+      label: 'Timezone'
+    forecast_days:
+      type: integer
+      label: 'Forecast days'
+    temperature_unit:
+      type: string
+      label: 'Temperature unit'

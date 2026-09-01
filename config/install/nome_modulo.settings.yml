@@ -1,2 +1,6 @@
-latitude: 41.9028
-longitude: 12.4964
+location: 'Turin'
+latitude: 45.0693
+longitude: 7.6934
+timezone: 'Europe/Rome'
+forecast_days: 5
+temperature_unit: 'celsius'

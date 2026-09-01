@@ -53,12 +53,38 @@ final class SettingsFormTest extends BrowserTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Weather forecast settings');
 
-    $this->assertSession()->fieldValueEquals('latitude', '41.9028');
-    $this->assertSession()->fieldValueEquals('longitude', '12.4964');
+    $this->assertSession()->fieldValueEquals(
+    'location',
+    'Turin',
+    );
+    $this->assertSession()->fieldValueEquals(
+    'latitude',
+    '45.0693',
+    );
+    $this->assertSession()->fieldValueEquals(
+    'longitude',
+    '7.6934',
+    );
+    $this->assertSession()->fieldValueEquals(
+    'timezone',
+    'Europe/Rome',
+    );
+    $this->assertSession()->fieldValueEquals(
+    'forecast_days',
+    '5',
+    );
+    $this->assertSession()->fieldValueEquals(
+    'temperature_unit',
+    'celsius',
+    );
 
     $edit = [
-      'latitude' => '45.0703',
-      'longitude' => '7.6869',
+      'location' => 'Rome',
+      'latitude' => '41.9028',
+      'longitude' => '12.4964',
+      'timezone' => 'Europe/Rome',
+      'forecast_days' => '7',
+      'temperature_unit' => 'fahrenheit',
     ];
 
     $this->submitForm($edit, 'Save configuration');
@@ -68,8 +94,30 @@ final class SettingsFormTest extends BrowserTestBase {
 
     $config = $this->config('nome_modulo.settings');
 
-    $this->assertSame(45.0703, $config->get('latitude'));
-    $this->assertSame(7.6869, $config->get('longitude'));
+    $this->assertSame(
+    'Rome',
+    $config->get('location'),
+    );
+    $this->assertSame(
+    41.9028,
+    $config->get('latitude'),
+    );
+    $this->assertSame(
+    12.4964,
+    $config->get('longitude'),
+    );
+    $this->assertSame(
+    'Europe/Rome',
+    $config->get('timezone'),
+    );
+    $this->assertSame(
+    7,
+    $config->get('forecast_days'),
+    );
+    $this->assertSame(
+    'fahrenheit',
+    $config->get('temperature_unit'),
+    );
   }
 
 }

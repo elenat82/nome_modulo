@@ -18,6 +18,11 @@ final class SettingsForm extends ConfigFormBase {
   private const CONFIG_NAME = 'nome_modulo.settings';
 
   /**
+   * Maximum number of forecast days supported by the provider.
+   */
+  private const MAX_FORECAST_DAYS = 16;
+
+  /**
    * Returns the unique ID of the settings form.
    *
    * @return string
@@ -42,8 +47,8 @@ final class SettingsForm extends ConfigFormBase {
   /**
    * Builds the module settings form.
    *
-   * Provides fields for configuring the latitude and longitude used to retrieve
-   * weather forecast data.
+   * Provides fields for configuring the location, coordinates, timezone,
+   * number of forecast days and temperature unit.
    *
    * @param array $form
    *   The form structure.
@@ -54,26 +59,93 @@ final class SettingsForm extends ConfigFormBase {
    *   The complete form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
-    $form['latitude'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Latitude'),
-      '#description' => $this->t('Enter a latitude between -90 and 90.'),
-      '#min' => -90,
-      '#max' => 90,
-      '#step' => 0.0001,
-      '#config_target' => self::CONFIG_NAME . ':latitude',
+    $form['location'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Location'),
+      '#description' => $this->t(
+        'Enter the human-readable name displayed with the forecast.',
+      ),
       '#required' => TRUE,
+      '#maxlength' => 128,
+      '#config_target' => self::CONFIG_NAME . ':location',
     ];
 
-    $form['longitude'] = [
+    $form['coordinates'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Coordinates'),
+      '#description' => $this->t(
+        'Coordinates are used to request the weather forecast.',
+      ),
+      '#open' => TRUE,
+    ];
+
+    $form['coordinates']['latitude'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Latitude'),
+      '#description' => $this->t(
+        'Enter a value between -90 and 90.',
+      ),
+      '#required' => TRUE,
+      '#min' => -90,
+      '#max' => 90,
+      '#step' => 0.000001,
+      '#config_target' => self::CONFIG_NAME . ':latitude',
+    ];
+
+    $form['coordinates']['longitude'] = [
       '#type' => 'number',
       '#title' => $this->t('Longitude'),
-      '#description' => $this->t('Enter a longitude between -180 and 180.'),
+      '#description' => $this->t(
+        'Enter a value between -180 and 180.',
+      ),
+      '#required' => TRUE,
       '#min' => -180,
       '#max' => 180,
-      '#step' => 0.0001,
+      '#step' => 0.000001,
       '#config_target' => self::CONFIG_NAME . ':longitude',
+    ];
+
+    $form['forecast'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Forecast options'),
+      '#open' => TRUE,
+    ];
+
+    $timezones = \DateTimeZone::listIdentifiers();
+
+    $form['forecast']['timezone'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Timezone'),
+      '#description' => $this->t(
+        'Select the timezone used to group the daily forecast.',
+      ),
+      '#options' => array_combine($timezones, $timezones),
       '#required' => TRUE,
+      '#config_target' => self::CONFIG_NAME . ':timezone',
+    ];
+
+    $form['forecast']['forecast_days'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Forecast days'),
+      '#description' => $this->t(
+        'Enter the number of days requested from the weather provider.',
+      ),
+      '#required' => TRUE,
+      '#min' => 1,
+      '#max' => self::MAX_FORECAST_DAYS,
+      '#step' => 1,
+      '#config_target' => self::CONFIG_NAME . ':forecast_days',
+    ];
+
+    $form['forecast']['temperature_unit'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Temperature unit'),
+      '#options' => [
+        'celsius' => $this->t('Celsius'),
+        'fahrenheit' => $this->t('Fahrenheit'),
+      ],
+      '#required' => TRUE,
+      '#config_target' => self::CONFIG_NAME . ':temperature_unit',
     ];
 
     return parent::buildForm($form, $form_state);
