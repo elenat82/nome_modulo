@@ -36,8 +36,7 @@ final class ThemeHooks {
     return [
       'nome_modulo_forecast' => [
         'variables' => [
-          'temperature' => NULL,
-          'weather_code' => NULL,
+          'forecast' => NULL,
         ],
       ],
     ];

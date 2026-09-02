@@ -12,9 +12,19 @@ interface ForecastClientInterface {
   /**
    * Gets weather forecast data.
    *
-   * @return array
-   *   The weather forecast data.
+   * @return array{
+   *   location: string,
+   *   timezone: string,
+   *   temperature_unit: string,
+   *   days: list<array{
+   *     date: string,
+   *     weather_code: int,
+   *     high: float,
+   *     low: float
+   *   }>
+   *   }|null
+   *   The normalized forecast data, or NULL when it cannot be retrieved.
    */
-  public function getForecast(): array;
+  public function getForecast(): ?array;
 
 }

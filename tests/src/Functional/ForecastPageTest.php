@@ -53,18 +53,21 @@ final class ForecastPageTest extends BrowserTestBase {
 
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Weather forecast');
-    $this->assertSession()->pageTextContains('Current temperature: 20 °C');
-    $this->assertSession()->pageTextContains('Weather code: 0');
+    $this->assertSession()->pageTextContains(
+    'Forecast for Test location',
+    );
+    $this->assertSession()->pageTextContains('2026-09-01');
+    $this->assertSession()->pageTextContains(
+    'Weather code: 0',
+    );
+    $this->assertSession()->pageTextContains(
+    'High: 25 °C',
+    );
+    $this->assertSession()->pageTextContains(
+    'Low: 15 °C',
+    );
     $this->assertSession()->elementExists('css', '.weather-forecast');
-    $this->assertSession()->elementExists(
-    'css',
-    '.weather-forecast__temperature',
-    );
-    $this->assertSession()->elementExists(
-    'css',
-    '.weather-forecast__unit-toggle',
-    );
-    $this->assertSession()->buttonExists('Show °F');
+
   }
 
 }

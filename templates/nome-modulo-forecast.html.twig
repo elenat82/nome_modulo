@@ -1,31 +1,65 @@
-<div
-  class="weather-forecast"
-  data-temperature-celsius="{{ temperature }}"
->
-  <p class="weather-forecast__temperature-wrapper">
-    {{ 'Current temperature:'|t }}
-    <strong class="weather-forecast__temperature">
-      {{ temperature }} °C
-    </strong>
+{#
+/**
+ * @file
+ * Default theme implementation for the weather forecast.
+ *
+ * Available variables:
+ * - forecast: Normalized forecast data, or null.
+ */
+#}
 
-    <button
-      type="button"
-      class="weather-forecast__unit-toggle"
-      aria-pressed="false"
-    >
-      {{ 'Show °F'|t }}
-    </button>
-  </p>
+{% set forecast_days =
+  forecast and forecast.days is defined
+    ? forecast.days
+    : []
+%}
 
-  <p>
-    {{ 'Weather code:'|t }}
-    <strong>{{ weather_code }}</strong>
-  </p>
+<div class="weather-forecast">
+	{% if forecast and forecast_days is not empty %}
+		{% set first_day = forecast_days|first %}
 
-  <small class="weather-forecast__attribution">
-    {{ 'Weather data by'|t }}
-    <a href="https://open-meteo.com/" rel="noopener noreferrer">
-      Open-Meteo.com
-    </a>
-  </small>
+		<p>
+			{{ 'Forecast for @location'|t({
+        '@location': forecast.location
+      }) }}
+		</p>
+
+		<h3>
+			<time datetime="{{ first_day.date }}">
+				{{ first_day.date }}
+			</time>
+		</h3>
+
+		<p>
+			{{ 'Weather code:'|t }}
+			<strong>{{ first_day.weather_code }}</strong>
+		</p>
+
+		<p>
+			{{ 'High:'|t }}
+			<strong>
+				{{ first_day.high }}
+				{{ forecast.temperature_unit }}
+			</strong>
+		</p>
+
+		<p>
+			{{ 'Low:'|t }}
+			<strong>
+				{{ first_day.low }}
+				{{ forecast.temperature_unit }}
+			</strong>
+		</p>
+	{% else %}
+		<p>
+			{{ 'The weather forecast is temporarily unavailable.'|t }}
+		</p>
+	{% endif %}
+
+	<small class="weather-forecast__attribution">
+		{{ 'Weather data by'|t }}
+		<a href="https://open-meteo.com/" rel="noopener noreferrer">
+			Open-Meteo.com
+		</a>
+	</small>
 </div>

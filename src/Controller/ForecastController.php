@@ -45,12 +45,10 @@ final class ForecastController extends ControllerBase {
    *   A render array containing the weather forecast page content.
    */
   public function build(): array {
-    $forecast = $this->forecastClient->getForecast();
 
     return [
       '#theme' => 'nome_modulo_forecast',
-      '#temperature' => $forecast['temperature'],
-      '#weather_code' => $forecast['weather_code'],
+      '#forecast' => $this->forecastClient->getForecast(),
       '#attached' => [
         'library' => [
           'nome_modulo/forecast',
