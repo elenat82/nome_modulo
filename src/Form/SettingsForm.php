@@ -261,4 +261,16 @@ final class SettingsForm extends ConfigFormBase {
     parent::validateForm($form, $form_state);
   }
 
+  /**
+   * Submits the settings form.
+   */
+  public function submitForm(
+    array &$form,
+    FormStateInterface $form_state,
+  ): void {
+    parent::submitForm($form, $form_state);
+
+    $form_state->setRedirect('nome_modulo.settings');
+  }
+
 }
