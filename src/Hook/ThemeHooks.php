@@ -37,9 +37,18 @@ final class ThemeHooks {
       'nome_modulo_forecast' => [
         'variables' => [
           'forecast' => NULL,
+          'display' => NULL,
         ],
       ],
     ];
+  }
+
+  /**
+   * Implements hook_preprocess_nome_modulo_forecast().
+   */
+  #[Hook('preprocess_nome_modulo_forecast')]
+  public function preprocessForecast(array &$variables): void {
+    $variables['#attached']['library'][] = 'nome_modulo/forecast';
   }
 
 }

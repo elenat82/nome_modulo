@@ -1,39 +1,43 @@
 (function (Drupal, once) {
-  Drupal.behaviors.nomeModuloTemperatureUnit = {
+  "use strict";
+
+  Drupal.behaviors.nomeModuloForecastToggle = {
     attach(context) {
       once(
-        'nome-modulo-temperature-unit',
-        '.weather-forecast',
+        "nome-modulo-forecast-toggle",
+        "[data-nome-modulo-forecast]",
         context,
       ).forEach((forecast) => {
-        const temperatureElement = forecast.querySelector(
-          '.weather-forecast__temperature',
-        );
-        const toggle = forecast.querySelector(
-          '.weather-forecast__unit-toggle',
-        );
-        const celsius = Number(forecast.dataset.temperatureCelsius);
+        const button = forecast.querySelector("[data-forecast-toggle]");
+        const details = forecast.querySelector("[data-forecast-details]");
 
-        if (!temperatureElement || !toggle || Number.isNaN(celsius)) {
+        if (!button || !details) {
           return;
         }
 
-        toggle.addEventListener('click', () => {
-          const showingFahrenheit =
-            toggle.getAttribute('aria-pressed') === 'true';
+        const showLabel =
+          button.dataset.showLabel || Drupal.t("Show extended forecast");
+        const hideLabel =
+          button.dataset.hideLabel || Drupal.t("Hide extended forecast");
 
-          if (showingFahrenheit) {
-            temperatureElement.textContent = `${celsius} °C`;
-            toggle.textContent = Drupal.t('Show °F');
-            toggle.setAttribute('aria-pressed', 'false');
-            return;
-          }
+        button.addEventListener("click", () => {
+          const isExpanded =
+            button.getAttribute("aria-expanded") === "true";
 
-          const fahrenheit = (celsius * 9) / 5 + 32;
+          button.setAttribute(
+            "aria-expanded",
+            String(!isExpanded),
+          );
 
-          temperatureElement.textContent = `${fahrenheit.toFixed(1)} °F`;
-          toggle.textContent = Drupal.t('Show °C');
-          toggle.setAttribute('aria-pressed', 'true');
+          details.hidden = isExpanded;
+          button.textContent = isExpanded
+            ? showLabel
+            : hideLabel;
+
+          forecast.classList.toggle(
+            "is-expanded",
+            !isExpanded,
+          );
         });
       });
     },

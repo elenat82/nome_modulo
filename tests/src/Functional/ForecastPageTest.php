@@ -44,10 +44,7 @@ final class ForecastPageTest extends BrowserTestBase {
    * Tests the forecast page with the required permission.
    */
   public function testForecastPageWithPermission(): void {
-    $account = $this->drupalCreateUser([
-      'view weather forecast',
-    ]);
-    $this->drupalLogin($account);
+    $this->loginUserWithForecastAccess();
 
     $this->drupalGet('/weather');
 
@@ -57,17 +54,133 @@ final class ForecastPageTest extends BrowserTestBase {
     'Forecast for Test location',
     );
     $this->assertSession()->pageTextContains('2026-09-01');
-    $this->assertSession()->pageTextContains(
-    'Weather code: 0',
+    $this->assertSession()->elementExists('css', '.nome-modulo-forecast');
+    $this->assertSession()->elementTextEquals(
+    'css',
+    '.nome-modulo-forecast__day--summary .nome-modulo-forecast__value:first-child dt',
+    'Weather code',
     );
-    $this->assertSession()->pageTextContains(
-    'High: 25 °C',
+    $this->assertSession()->elementTextEquals(
+    'css',
+    '.nome-modulo-forecast__day--summary .nome-modulo-forecast__value:first-child dd',
+    '0',
     );
-    $this->assertSession()->pageTextContains(
-    'Low: 15 °C',
+    $this->assertSession()->elementTextEquals(
+    'css',
+    '.nome-modulo-forecast__day--summary .nome-modulo-forecast__value:nth-child(2) dt',
+    'High',
     );
-    $this->assertSession()->elementExists('css', '.weather-forecast');
 
+    $this->assertSession()->elementTextEquals(
+    'css',
+    '.nome-modulo-forecast__day--summary .nome-modulo-forecast__value:nth-child(2) dd',
+    '25 °C',
+    );
+
+    $this->assertSession()->elementTextEquals(
+    'css',
+    '.nome-modulo-forecast__day--summary .nome-modulo-forecast__value:nth-child(3) dt',
+    'Low',
+    );
+
+    $this->assertSession()->elementTextEquals(
+    'css',
+    '.nome-modulo-forecast__day--summary .nome-modulo-forecast__value:nth-child(3) dd',
+    '15 °C',
+    );
+
+  }
+
+  /**
+   * Tests the default forecast display mode.
+   */
+  public function testDefaultDisplay(): void {
+    $this->loginUserWithForecastAccess();
+
+    $this->drupalGet('/weather');
+
+    $forecast = $this->assertSession()->elementExists(
+    'css',
+    '[data-nome-modulo-forecast]',
+    );
+
+    $this->assertSame(
+    'summary',
+    $forecast->getAttribute('data-display'),
+    );
+
+    $details = $this->assertSession()->elementExists(
+    'css',
+    '[data-forecast-details]',
+    );
+
+    $this->assertTrue($details->hasAttribute('hidden'));
+
+    $button = $this->assertSession()->buttonExists(
+    'Show extended forecast',
+    );
+
+    $this->assertSame(
+    'false',
+    $button->getAttribute('aria-expanded'),
+    );
+  }
+
+  /**
+   * Tests the extended forecast display mode.
+   */
+  public function testExtendedDisplay(): void {
+    $this->loginUserWithForecastAccess();
+
+    $this->drupalGet('/weather/extended');
+
+    $this->assertSession()->statusCodeEquals(200);
+
+    $forecast = $this->assertSession()->elementExists(
+    'css',
+    '[data-nome-modulo-forecast]',
+    );
+
+    $this->assertSame(
+    'extended',
+    $forecast->getAttribute('data-display'),
+    );
+
+    $details = $this->assertSession()->elementExists(
+    'css',
+    '[data-forecast-details]',
+    );
+
+    $this->assertFalse($details->hasAttribute('hidden'));
+
+    $this->assertSession()->buttonNotExists(
+    'Show extended forecast',
+    );
+
+    $this->assertSession()->pageTextContains('2026-09-02');
+    $this->assertSession()->pageTextContains('2026-09-03');
+  }
+
+  /**
+   * Tests an invalid display route parameter.
+   */
+  public function testInvalidDisplayParameter(): void {
+    $this->loginUserWithForecastAccess();
+
+    $this->drupalGet('/weather/invalid');
+
+    $this->assertSession()->statusCodeEquals(404);
+  }
+
+  /**
+   * Logs in a user with permission to view the weather forecast.
+   */
+  private function loginUserWithForecastAccess(): void {
+    $account = $this->drupalCreateUser([
+      'view weather forecast',
+    ]);
+
+    $this->drupalLogin($account);
   }
 
 }
