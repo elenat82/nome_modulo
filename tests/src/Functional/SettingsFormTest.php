@@ -120,4 +120,29 @@ final class SettingsFormTest extends BrowserTestBase {
     );
   }
 
+  /**
+   * Tests settings form validation.
+   */
+  public function testSettingsFormValidation(): void {
+    $account = $this->drupalCreateUser([
+      'administer weather settings',
+    ]);
+    $this->drupalLogin($account);
+
+    $this->drupalGet('/admin/config/services/nome-modulo');
+
+    $this->submitForm([
+      'location' => ' A ',
+      'latitude' => '45.0693',
+      'longitude' => '7.6934',
+      'timezone' => 'Europe/Rome',
+      'forecast_days' => '5',
+      'temperature_unit' => 'celsius',
+    ], 'Save configuration');
+
+    $this->assertSession()->pageTextContains(
+    'The location must contain at least two characters.',
+    );
+  }
+
 }

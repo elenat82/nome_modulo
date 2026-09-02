@@ -151,4 +151,114 @@ final class SettingsForm extends ConfigFormBase {
     return parent::buildForm($form, $form_state);
   }
 
+  /**
+   * Validates the settings form.
+   */
+  public function validateForm(
+    array &$form,
+    FormStateInterface $form_state,
+  ): void {
+    $location = trim((string) $form_state->getValue('location'));
+
+    $form_state->setValue('location', $location);
+
+    if (mb_strlen($location) < 2) {
+      $form_state->setErrorByName(
+      'location',
+      $this->t(
+        'The location must contain at least two characters.',
+      ),
+      );
+    }
+
+    $latitude = filter_var(
+    $form_state->getValue('latitude'),
+    FILTER_VALIDATE_FLOAT,
+    );
+
+    if (
+    $latitude === FALSE ||
+    $latitude < -90 ||
+    $latitude > 90
+    ) {
+      $form_state->setErrorByName(
+      'latitude',
+      $this->t(
+        'The latitude must be a number between -90 and 90.',
+      ),
+      );
+    }
+
+    $longitude = filter_var(
+    $form_state->getValue('longitude'),
+    FILTER_VALIDATE_FLOAT,
+    );
+
+    if (
+    $longitude === FALSE ||
+    $longitude < -180 ||
+    $longitude > 180
+    ) {
+      $form_state->setErrorByName(
+      'longitude',
+      $this->t(
+        'The longitude must be a number between -180 and 180.',
+      ),
+      );
+    }
+
+    $timezone = (string) $form_state->getValue('timezone');
+
+    if (!in_array(
+    $timezone,
+    \DateTimeZone::listIdentifiers(),
+    TRUE,
+    )) {
+      $form_state->setErrorByName(
+      'timezone',
+      $this->t('Select a valid timezone.'),
+      );
+    }
+
+    $forecastDays = filter_var(
+    $form_state->getValue('forecast_days'),
+    FILTER_VALIDATE_INT,
+    [
+      'options' => [
+        'min_range' => 1,
+        'max_range' => self::MAX_FORECAST_DAYS,
+      ],
+    ],
+    );
+
+    if ($forecastDays === FALSE) {
+      $form_state->setErrorByName(
+      'forecast_days',
+      $this->t(
+        'The number of forecast days must be between 1 and @maximum.',
+        [
+          '@maximum' => self::MAX_FORECAST_DAYS,
+        ],
+      ),
+      );
+    }
+
+    $temperatureUnit = (string) $form_state->getValue(
+    'temperature_unit',
+    );
+
+    if (!in_array(
+    $temperatureUnit,
+    ['celsius', 'fahrenheit'],
+    TRUE,
+    )) {
+      $form_state->setErrorByName(
+      'temperature_unit',
+      $this->t('Select a valid temperature unit.'),
+      );
+    }
+
+    parent::validateForm($form, $form_state);
+  }
+
 }
