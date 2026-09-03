@@ -41,19 +41,41 @@ The module currently provides a weather forecast page available at:
 
 `/weather`
 
+The forecast page retrieves daily weather forecast data from the Open-Meteo API through a dedicated `ForecastClient` service.
+
 The current implementation includes:
 
 - a Drupal route handled by `ForecastController`;
 - a dedicated `ForecastClient` service;
 - constructor dependency injection through `ForecastClientInterface`;
-- a preliminary static forecast response, used before integrating the external weather API;
-- functional tests covering both authorized and unauthorized access to the forecast page.
+- integration with the Open-Meteo API;
+- normalization of external weather data into an internal forecast structure;
+- configurable location, coordinates, timezone, forecast length, and temperature unit through an administrative settings form;
+- custom permissions controlling access to the forecast page and administrative settings;
+- an administrative menu link for the settings page;
+- object-oriented hook implementations using Drupal's `#[Hook]` attribute;
+- Render API and a dedicated Twig template for forecast output;
+- a Drupal asset library providing component-specific CSS and JavaScript;
+- a Drupal JavaScript behavior allowing the summary forecast to reveal the extended forecast without reloading the page;
+- a `display` route parameter supporting summary and extended forecast views. In summary mode, the first forecast day is displayed initially and the remaining days can be revealed through a JavaScript toggle. In extended mode, all forecast days are displayed immediately;
+- functional tests covering access control, module configuration, route parameters, and forecast rendering.
 
-The forecast service currently returns static data. Integration with the Open-Meteo API will be introduced in a subsequent development step.
+The default forecast URL:
+
+`/weather`
+
+uses the summary display mode.
+
+The following URLs are also available:
+
+- /weather/summary
+- /weather/extended
+
+Only summary and extended are accepted as values for the display route parameter.
 
 ## Requirements
 
-* Drupal 11
+* Drupal 11.1 or later
 * Composer
 * Drush
 
@@ -63,23 +85,45 @@ The local development environment used for this project is based on DDEV.
 
 The module is currently under development.
 
-Once a functional version is available, installation instructions will be documented here.
+Place the module in:
+
+`web/modules/custom/nome_modulo`
+
+Enable it with Drush:
+
+```bash
+ddev drush en nome_modulo -y
+```
+
+Rebuild Drupal caches:
+
+```bash
+ddev drush cr
+```
+
+The module settings are available at:
+
+`/admin/config/services/nome-modulo`
+
+The forecast page is available at:
+
+`/weather`
 
 ## Development
 
 The module is being developed incrementally, with small commits intended to keep the Git history readable and to make the evolution of the project easy to follow.
 
-Code quality and development tooling will include:
+Current code quality and development tooling includes:
 
 * Drupal Coding Standards;
 * PHP_CodeSniffer and Drupal Coder;
 * automated functional tests;
 * source-code documentation through PHPDoc/DocBlock comments.
+* generated API documentation through phpDocumentor.
 
 Additional development tooling will be introduced as the project evolves, including:
 * static analysis;
-* generated API documentation;
-* continuous integration with GitHub Actions;
+* continuous integration with GitHub Actions.
 
 ## Code quality
 
@@ -105,30 +149,35 @@ git diff
 
 and run PHP_CodeSniffer again to verify that no violations remain.
 
-The project's PHP_CodeSniffer rules are defined in phpcs.xml.dist.
+The project's PHP_CodeSniffer rules are defined in `phpcs.xml.dist`.
 
 ## Testing
 
 Functional tests are implemented with Drupal's `BrowserTestBase`.
 
-The current test suite verifies that:
+The current test suite covers:
 
-- users without the required `access content` permission receive an HTTP `403` response;
-- users with the required permission receive an HTTP `200` response;
-- the forecast page renders the expected title and forecast data.
+- access to the forecast page with and without the required permission;
+- the default summary display mode;
+- valid summary and extended route parameters;
+- rejection of invalid display route parameters with an HTTP 404 response;
+- forecast rendering using a test double instead of the external Open-Meteo API;
+- access to the administrative settings form;
+- persistence of forecast configuration values, including location, coordinates, timezone, forecast length, and temperature unit;
+- custom settings form validation;
 
 Run the functional tests from the Drupal project root with:
 
 ```bash
-ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Functional/ForecastPageTest.php
+ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Functional
 ```
 ## Documentation
 
 Documentation is considered part of the development process rather than a final project deliverable.
 
-This README will provide the high-level documentation of the module, while source-code documentation will be maintained through meaningful PHPDoc/DocBlock comments where appropriate.
+This README provides the high-level documentation of the module, while source-code documentation is maintained through meaningful PHPDoc/DocBlock comments where appropriate.
 
-API documentation will be generated automatically from the source code as the project evolves.
+API documentation is generated automatically from the source code with phpDocumentor using the configuration defined in `phpdoc.dist.xml`.
 
 ## License
 
