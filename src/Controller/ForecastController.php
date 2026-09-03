@@ -50,6 +50,12 @@ final class ForecastController extends ControllerBase {
       '#theme' => 'nome_modulo_forecast',
       '#forecast' => $this->forecastClient->getForecast(),
       '#display' => $display,
+      '#cache' => [
+        'tags' => [
+          'nome_modulo:forecast',
+        ],
+        'max-age' => 1800,
+      ],
     ];
   }
 

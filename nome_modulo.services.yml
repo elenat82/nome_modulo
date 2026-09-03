@@ -2,7 +2,24 @@ services:
   nome_modulo.forecast_client:
     class: Drupal\nome_modulo\Service\ForecastClient
     arguments:
-    - '@http_client'
-    - '@config.factory'
+      - '@http_client'
+      - '@config.factory'
+      - '@cache.nome_modulo'
+      - '@datetime.time'
 
   Drupal\nome_modulo\Service\ForecastClientInterface: '@nome_modulo.forecast_client'
+
+  cache.nome_modulo:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: ['@cache_factory', 'get']
+    arguments:
+      - nome_modulo
+
+  nome_modulo.weather_event_subscriber:
+    class: Drupal\nome_modulo\EventSubscriber\WeatherEventSubscriber
+    arguments:
+      - '@cache_tags.invalidator'
+    tags:
+      - { name: event_subscriber }

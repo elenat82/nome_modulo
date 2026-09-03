@@ -7,6 +7,8 @@ namespace Drupal\nome_modulo\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Cache\CacheBackendInterface;
 
 /**
  * Retrieves and normalizes weather forecast data.
@@ -19,16 +21,32 @@ final class ForecastClient implements ForecastClientInterface {
   private const API_URL = 'https://api.open-meteo.com/v1/forecast';
 
   /**
+   * Cache lifetime in seconds.
+   */
+  private const CACHE_MAX_AGE = 1800;
+
+  /**
+   * Cache tag used for forecast data.
+   */
+  private const CACHE_TAG = 'nome_modulo:forecast';
+
+  /**
    * Constructs a ForecastClient object.
    *
    * @param \GuzzleHttp\ClientInterface $httpClient
-   *   The HTTP client.
+   *   The HTTP client used to communicate with the weather provider.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-   *   The configuration factory.
+   *   The configuration factory used to retrieve module settings.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   *   The cache backend used to store forecast data.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service used to calculate cache expiration.
    */
   public function __construct(
     private readonly ClientInterface $httpClient,
     private readonly ConfigFactoryInterface $configFactory,
+    private readonly CacheBackendInterface $cache,
+    private readonly TimeInterface $time,
   ) {}
 
   /**
@@ -79,6 +97,20 @@ final class ForecastClient implements ForecastClientInterface {
       $temperatureUnit = 'celsius';
     }
 
+    $cacheId = $this->buildCacheId(
+    (float) $latitude,
+    (float) $longitude,
+    $timezone,
+    $forecastDays,
+    $temperatureUnit,
+    );
+
+    $cached = $this->cache->get($cacheId);
+
+    if ($cached !== FALSE && is_array($cached->data)) {
+      return $cached->data;
+    }
+
     try {
       $response = $this->httpClient->request(
         'GET',
@@ -119,6 +151,13 @@ final class ForecastClient implements ForecastClientInterface {
       $forecast = $this->normalizeForecast($data);
       $forecast['location'] = $location;
 
+      $this->cache->set(
+      $cacheId,
+      $forecast,
+      $this->time->getCurrentTime() + self::CACHE_MAX_AGE,
+      [self::CACHE_TAG],
+      );
+
       return $forecast;
     }
     catch (
@@ -128,6 +167,30 @@ final class ForecastClient implements ForecastClientInterface {
     ) {
       return NULL;
     }
+  }
+
+  /**
+   * Builds a cache ID for the requested forecast.
+   */
+  private function buildCacheId(
+    float $latitude,
+    float $longitude,
+    string $timezone,
+    int $forecastDays,
+    string $temperatureUnit,
+  ): string {
+    $parameters = implode(':', [
+      $latitude,
+      $longitude,
+      $timezone,
+      $forecastDays,
+      $temperatureUnit,
+    ]);
+
+    return 'nome_modulo:forecast:' . hash(
+    'sha256',
+    $parameters,
+    );
   }
 
   /**
