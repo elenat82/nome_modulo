@@ -32,21 +32,30 @@ final class ForecastClient implements ForecastClientInterface {
   ) {}
 
   /**
-   * Retrieves the current weather forecast from Open-Meteo.
+   * Retrieves and normalizes the weather forecast from Open-Meteo.
    *
-   * Uses the configured latitude and longitude to request the current
-   * temperature and weather code from the Open-Meteo API.
+   * Uses the module configuration to request daily weather forecast data
+   * from Open-Meteo and converts the provider response into the module's
+   * internal forecast structure.
    *
-   * @return array
-   *   The forecast data, containing:
-   *   - temperature: The current temperature.
-   *   - weather_code: The Open-Meteo weather condition code.
+   * @return array{
+   *   location: string,
+   *   timezone: string,
+   *   temperature_unit: string,
+   *   days: list<array{
+   *     date: string,
+   *     weather_code: int,
+   *     high: float,
+   *     low: float
+   *   }>
+   *   }|null
+   *   The normalized forecast data, or NULL when it cannot be retrieved.
    */
   public function getForecast(): ?array {
     $config = $this->configFactory->get('nome_modulo.settings');
 
-    $latitude = (float) $config->get('latitude');
-    $longitude = (float) $config->get('longitude');
+    $latitude = $config->get('latitude');
+    $longitude = $config->get('longitude');
 
     if (!is_numeric($latitude) || !is_numeric($longitude)) {
       return NULL;

@@ -15,105 +15,103 @@
     : []
 %}
 
-<section
-  class="nome-modulo-forecast"
-  data-nome-modulo-forecast
-  data-display="{{ display }}">
+<section class="nome-modulo-forecast" data-nome-modulo-forecast data-display="{{ display }}">
 
-  {% if forecast and forecast_days is not empty %}
-    <header class="nome-modulo-forecast__header">
-      <h2 class="nome-modulo-forecast__title">
-        {{ 'Forecast for @location'|t({
+	{% if forecast and forecast_days is not empty %}
+		<header class="nome-modulo-forecast__header">
+			<h2 class="nome-modulo-forecast__title">
+				{{ 'Forecast for @location'|t({
           '@location': forecast.location
         }) }}
-      </h2>
-    </header>
+			</h2>
+		</header>
 
-    {% set first_day = forecast_days|first %}
+		{% set first_day = forecast_days|first %}
 
-    <article class="nome-modulo-forecast__day nome-modulo-forecast__day--summary">
-      <h3 class="nome-modulo-forecast__date">
-        <time datetime="{{ first_day.date }}">
-          {{ first_day.date }}
-        </time>
-      </h3>
+		<article class="nome-modulo-forecast__day nome-modulo-forecast__day--summary">
+			<h3 class="nome-modulo-forecast__date">
+				<time datetime="{{ first_day.date }}">
+					{{ first_day.date }}
+				</time>
+			</h3>
 
-      <dl class="nome-modulo-forecast__values">
-        <div class="nome-modulo-forecast__value">
-          <dt>{{ 'Weather code'|t }}</dt>
-          <dd>{{ first_day.weather_code }}</dd>
-        </div>
+			<dl class="nome-modulo-forecast__values">
+				<div class="nome-modulo-forecast__value">
+					<dt>{{ 'Weather code'|t }}</dt>
+					<dd>{{ first_day.weather_code }}</dd>
+				</div>
 
-        <div class="nome-modulo-forecast__value">
-          <dt>{{ 'High'|t }}</dt>
-          <dd>
-            {{ first_day.high }} {{ forecast.temperature_unit }}
-          </dd>
-        </div>
+				<div class="nome-modulo-forecast__value">
+					<dt>{{ 'High'|t }}</dt>
+					<dd>
+						{{ first_day.high }}
+						{{ forecast.temperature_unit }}
+					</dd>
+				</div>
 
-        <div class="nome-modulo-forecast__value">
-          <dt>{{ 'Low'|t }}</dt>
-          <dd>
-            {{ first_day.low }} {{ forecast.temperature_unit }}
-          </dd>
-        </div>
-      </dl>
-    </article>
+				<div class="nome-modulo-forecast__value">
+					<dt>{{ 'Low'|t }}</dt>
+					<dd>
+						{{ first_day.low }}
+						{{ forecast.temperature_unit }}
+					</dd>
+				</div>
+			</dl>
+		</article>
 
-    {% if forecast_days|length > 1 %}
-      <div
-        class="nome-modulo-forecast__details"
-        data-forecast-details
-        {% if display == 'summary' %}hidden{% endif %}
-      >
-        {% for day in forecast_days|slice(1) %}
-          <article class="nome-modulo-forecast__day">
-            <h3 class="nome-modulo-forecast__date">
-              <time datetime="{{ day.date }}">
-                {{ day.date }}
-              </time>
-            </h3>
+		{% if forecast_days|length > 1 %}
+			<div class="nome-modulo-forecast__details" data-forecast-details {% if display == 'summary' %} hidden {% endif %}>
+				{% for day in forecast_days|slice(1) %}
+					<article class="nome-modulo-forecast__day">
+						<h3 class="nome-modulo-forecast__date">
+							<time datetime="{{ day.date }}">
+								{{ day.date }}
+							</time>
+						</h3>
 
-            <dl class="nome-modulo-forecast__values">
-              <div class="nome-modulo-forecast__value">
-                <dt>{{ 'Weather code'|t }}</dt>
-                <dd>{{ day.weather_code }}</dd>
-              </div>
+						<dl class="nome-modulo-forecast__values">
+							<div class="nome-modulo-forecast__value">
+								<dt>{{ 'Weather code'|t }}</dt>
+								<dd>{{ day.weather_code }}</dd>
+							</div>
 
-              <div class="nome-modulo-forecast__value">
-                <dt>{{ 'High'|t }}</dt>
-                <dd>
-                  {{ day.high }} {{ forecast.temperature_unit }}
-                </dd>
-              </div>
+							<div class="nome-modulo-forecast__value">
+								<dt>{{ 'High'|t }}</dt>
+								<dd>
+									{{ day.high }}
+									{{ forecast.temperature_unit }}
+								</dd>
+							</div>
 
-              <div class="nome-modulo-forecast__value">
-                <dt>{{ 'Low'|t }}</dt>
-                <dd>
-                  {{ day.low }} {{ forecast.temperature_unit }}
-                </dd>
-              </div>
-            </dl>
-          </article>
-        {% endfor %}
-      </div>
+							<div class="nome-modulo-forecast__value">
+								<dt>{{ 'Low'|t }}</dt>
+								<dd>
+									{{ day.low }}
+									{{ forecast.temperature_unit }}
+								</dd>
+							</div>
+						</dl>
+					</article>
+				{% endfor %}
+			</div>
 
-      {% if display == 'summary' %}
-        <button
-          class="nome-modulo-forecast__toggle"
-          type="button"
-          aria-expanded="false"
-          data-forecast-toggle
-          data-show-label="{{ 'Show extended forecast'|t }}"
-          data-hide-label="{{ 'Hide extended forecast'|t }}"
-        >
-          {{ 'Show extended forecast'|t }}
-        </button>
-      {% endif %}
-    {% endif %}
-  {% else %}
-    <p class="nome-modulo-forecast__message">
-      {{ 'The weather forecast is temporarily unavailable.'|t }}
-    </p>
-  {% endif %}
+			{% if display == 'summary' %}
+				<button class="nome-modulo-forecast__toggle" type="button" aria-expanded="false" data-forecast-toggle data-show-label="{{ 'Show extended forecast'|t }}" data-hide-label="{{ 'Hide extended forecast'|t }}">
+					{{ 'Show extended forecast'|t }}
+				</button>
+			{% endif %}
+		{% endif %}
+	{% else %}
+		<p class="nome-modulo-forecast__message">
+			{{ 'The weather forecast is temporarily unavailable.'|t }}
+		</p>
+	{% endif %}
+	<footer class="nome-modulo-forecast__footer">
+		<small class="nome-modulo-forecast__attribution">
+			{{ 'Weather data by'|t }}
+			<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+				Open-Meteo.com
+			</a>
+		</small>
+	</footer>
 </section>
