@@ -153,9 +153,22 @@ The project's PHP_CodeSniffer rules are defined in `phpcs.xml.dist`.
 
 ## Testing
 
+The project includes automated unit and functional tests.
+
+Unit tests are implemented with Drupal's `UnitTestCase` and are used to verify isolated application logic without performing real HTTP requests.
+
+The current unit test suite covers:
+
+- returning cached forecast data without calling the external API;
+- retrieving and normalizing forecast data after a cache miss;
+- writing normalized forecast data to cache with the expected cache metadata;
+- rejecting invalid coordinates before performing an HTTP request;
+- handling HTTP failures;
+- handling invalid provider responses.
+
 Functional tests are implemented with Drupal's `BrowserTestBase`.
 
-The current test suite covers:
+The current functional test suite covers:
 
 - access to the forecast page with and without the required permission;
 - the default summary display mode;
@@ -165,6 +178,16 @@ The current test suite covers:
 - access to the administrative settings form;
 - persistence of forecast configuration values, including location, coordinates, timezone, forecast length, and temperature unit;
 - custom settings form validation;
+- forecast block access control;
+- default and extended forecast block rendering;
+- configurable forecast block display length;
+- optional rendering of the full forecast link.
+
+Run the unit tests from the Drupal project root with:
+
+```bash
+ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Unit
+```
 
 Run the functional tests from the Drupal project root with:
 
@@ -178,6 +201,16 @@ Documentation is considered part of the development process rather than a final 
 This README provides the high-level documentation of the module, while source-code documentation is maintained through meaningful PHPDoc/DocBlock comments where appropriate.
 
 API documentation is generated automatically from the source code with phpDocumentor using the configuration defined in `phpdoc.dist.xml`.
+
+Docker is required to generate the documentation locally.
+
+From the module root, run:
+
+```bash
+docker run --rm -v "$(pwd):/data" phpdoc/phpdoc:3 --config=phpdoc.dist.xml
+```
+
+The generated documentation and phpDocumentor cache are stored in the directories configured in `phpdoc.dist.xml`.
 
 ## License
 
