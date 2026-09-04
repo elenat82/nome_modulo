@@ -40,6 +40,15 @@ final class ThemeHooks {
           'display' => NULL,
         ],
       ],
+      'nome_modulo_forecast_block' => [
+        'variables' => [
+          'location' => NULL,
+          'days' => [],
+          'display' => 'summary',
+          'temperature_unit' => NULL,
+          'error_message' => NULL,
+        ],
+      ],
     ];
   }
 
@@ -48,6 +57,14 @@ final class ThemeHooks {
    */
   #[Hook('preprocess_nome_modulo_forecast')]
   public function preprocessForecast(array &$variables): void {
+    $variables['#attached']['library'][] = 'nome_modulo/forecast';
+  }
+
+  /**
+ * Implements hook_preprocess_nome_modulo_forecast_block().
+ */
+  #[Hook('preprocess_nome_modulo_forecast_block')]
+  public function preprocessForecastBlock(array &$variables): void {
     $variables['#attached']['library'][] = 'nome_modulo/forecast';
   }
 

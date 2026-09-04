@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * Default theme implementation for the weather forecast block.
+ *
+ * Available variables:
+ * - location: Human-readable location.
+ * - days: Forecast days displayed by this block.
+ * - display: Display mode.
+ * - temperature_unit: Unit returned by the provider.
+ * - error_message: Translatable error message, or null.
+ */
+#}
+
+<div
+  class="nome-modulo-forecast-block nome-modulo-forecast-block--{{ display|clean_class }}"
+>
+  {% if error_message %}
+    <p class="nome-modulo-forecast-block__message">
+      {{ error_message }}
+    </p>
+  {% else %}
+    {% if location %}
+      <h2 class="nome-modulo-forecast-block__title">
+        {{ 'Forecast for @location'|t({
+          '@location': location
+        }) }}
+      </h2>
+    {% endif %}
+
+    {% if days is not empty %}
+      <ul class="nome-modulo-forecast-block__days">
+        {% for day in days %}
+          <li class="nome-modulo-forecast-block__day">
+            <time
+              class="nome-modulo-forecast-block__date"
+              datetime="{{ day.date }}"
+            >
+              {{ day.date }}
+            </time>
+
+            <span class="nome-modulo-forecast-block__temperature">
+              {{ 'High: @high, low: @low'|t({
+                '@high': day.high ~ ' ' ~ temperature_unit,
+                '@low': day.low ~ ' ' ~ temperature_unit
+              }) }}
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <footer class="nome-modulo-forecast-block__footer">
+      <small class="nome-modulo-forecast-block__attribution">
+        {{ 'Weather data by'|t }}
+        <a
+          href="https://open-meteo.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open-Meteo.com
+        </a>
+      </small>
+    </footer>
+  {% endif %}
+</div>
