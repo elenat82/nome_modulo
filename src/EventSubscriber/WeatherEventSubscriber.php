@@ -8,6 +8,7 @@ use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Drupal\nome_modulo\Cache\ForecastCache;
 
 /**
  * Reacts to weather and configuration events.
@@ -44,7 +45,7 @@ final class WeatherEventSubscriber implements EventSubscriberInterface {
     }
 
     $this->cacheTagsInvalidator->invalidateTags([
-      'nome_modulo:forecast',
+      ForecastCache::TAG,
     ]);
   }
 

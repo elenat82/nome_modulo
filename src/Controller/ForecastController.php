@@ -7,6 +7,7 @@ namespace Drupal\nome_modulo\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\nome_modulo\Service\ForecastClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\nome_modulo\Cache\ForecastCache;
 
 /**
  * Provides the weather forecast page.
@@ -52,9 +53,9 @@ final class ForecastController extends ControllerBase {
       '#display' => $display,
       '#cache' => [
         'tags' => [
-          'nome_modulo:forecast',
+          ForecastCache::TAG,
         ],
-        'max-age' => 1800,
+        'max-age' => ForecastCache::MAX_AGE,
       ],
     ];
   }

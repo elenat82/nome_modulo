@@ -9,6 +9,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\nome_modulo\Cache\ForecastCache;
 
 /**
  * Retrieves and normalizes weather forecast data.
@@ -19,16 +20,6 @@ final class ForecastClient implements ForecastClientInterface {
    * The Open-Meteo forecast API endpoint.
    */
   private const API_URL = 'https://api.open-meteo.com/v1/forecast';
-
-  /**
-   * Cache lifetime in seconds.
-   */
-  private const CACHE_MAX_AGE = 1800;
-
-  /**
-   * Cache tag used for forecast data.
-   */
-  private const CACHE_TAG = 'nome_modulo:forecast';
 
   /**
    * Constructs a ForecastClient object.
@@ -154,8 +145,8 @@ final class ForecastClient implements ForecastClientInterface {
       $this->cache->set(
       $cacheId,
       $forecast,
-      $this->time->getCurrentTime() + self::CACHE_MAX_AGE,
-      [self::CACHE_TAG],
+      $this->time->getCurrentTime() + ForecastCache::MAX_AGE,
+      [ForecastCache::TAG],
       );
 
       return $forecast;

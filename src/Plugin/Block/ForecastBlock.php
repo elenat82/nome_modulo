@@ -14,6 +14,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\nome_modulo\Service\ForecastClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\nome_modulo\Cache\ForecastCache;
 
 /**
  * Provides a weather forecast block.
@@ -24,11 +25,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   category: new TranslatableMarkup('Nome Modulo'),
 )]
 final class ForecastBlock extends BlockBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * Forecast cache lifetime in seconds.
-   */
-  private const CACHE_MAX_AGE = 1800;
 
   /**
    * Constructs a ForecastBlock object.
@@ -154,7 +150,7 @@ final class ForecastBlock extends BlockBase implements ContainerFactoryPluginInt
     return Cache::mergeTags(
       parent::getCacheTags(),
       [
-        'nome_modulo:forecast',
+        ForecastCache::TAG,
       ],
     );
   }
@@ -168,7 +164,7 @@ final class ForecastBlock extends BlockBase implements ContainerFactoryPluginInt
   public function getCacheMaxAge(): int {
     return Cache::mergeMaxAges(
       parent::getCacheMaxAge(),
-      self::CACHE_MAX_AGE,
+      ForecastCache::MAX_AGE,
     );
   }
 
