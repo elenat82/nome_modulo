@@ -46,6 +46,7 @@ final class ThemeHooks {
           'days' => [],
           'display' => 'summary',
           'temperature_unit' => NULL,
+          'forecast_link' => [],
           'error_message' => NULL,
         ],
       ],

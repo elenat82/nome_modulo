@@ -8,6 +8,7 @@
  * - days: Forecast days displayed by this block.
  * - display: Display mode.
  * - temperature_unit: Unit returned by the provider.
+ * - forecast_link: Render array containing the full forecast link.
  * - error_message: Translatable error message, or null.
  */
 #}
@@ -49,6 +50,12 @@
         {% endfor %}
       </ul>
     {% endif %}
+
+    {% if forecast_link %}
+  <div class="nome-modulo-forecast-block__link">
+    {{ forecast_link }}
+  </div>
+{% endif %}
 
     <footer class="nome-modulo-forecast-block__footer">
       <small class="nome-modulo-forecast-block__attribution">

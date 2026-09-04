@@ -20,3 +20,17 @@ nome_modulo.settings:
     temperature_unit:
       type: string
       label: 'Temperature unit'
+
+block.settings.nome_modulo_forecast:
+  type: block_settings
+  label: 'Weather forecast block settings'
+  mapping:
+    display:
+      type: string
+      label: 'Display mode'
+    number_of_days:
+      type: integer
+      label: 'Number of days'
+    show_link:
+      type: boolean
+      label: 'Show full forecast link'

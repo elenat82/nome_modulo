@@ -52,9 +52,9 @@ final class ForecastBlockTest extends BrowserTestBase {
   }
 
   /**
-   * Tests forecast block rendering with the required permission.
+   * Tests forecast block rendering with the default configuration.
    */
-  public function testForecastBlockWithPermission(): void {
+  public function testDefaultBlockConfiguration(): void {
     $this->placeBlock('nome_modulo_forecast', [
       'region' => 'content',
     ]);
@@ -66,6 +66,10 @@ final class ForecastBlockTest extends BrowserTestBase {
     $this->assertSession()->elementExists(
       'css',
       '.nome-modulo-forecast-block',
+    );
+    $this->assertSession()->elementExists(
+    'css',
+    '.nome-modulo-forecast-block--summary',
     );
 
     $this->assertSession()->pageTextContains(
@@ -90,6 +94,59 @@ final class ForecastBlockTest extends BrowserTestBase {
 
     $this->assertSession()->pageTextNotContains(
       '2026-09-03',
+    );
+
+    $this->assertSession()->linkExists(
+    'View full forecast',
+    );
+
+    $link = $this->getSession()
+      ->getPage()
+      ->findLink('View full forecast');
+
+    $this->assertNotNull($link);
+
+    $this->assertStringContainsString(
+    '/weather/extended',
+    $link->getAttribute('href'),
+    );
+
+  }
+
+  /**
+   * Tests the extended forecast block configuration.
+   */
+  public function testExtendedBlockConfiguration(): void {
+    $this->placeBlock('nome_modulo_forecast', [
+      'region' => 'content',
+      'display' => 'extended',
+      'number_of_days' => 2,
+      'show_link' => FALSE,
+    ]);
+
+    $this->loginUserWithForecastAccess();
+
+    $this->drupalGet('<front>');
+
+    $this->assertSession()->elementExists(
+    'css',
+    '.nome-modulo-forecast-block--extended',
+    );
+
+    $this->assertSession()->pageTextContains(
+    '2026-09-01',
+    );
+
+    $this->assertSession()->pageTextContains(
+    '2026-09-02',
+    );
+
+    $this->assertSession()->pageTextNotContains(
+    '2026-09-03',
+    );
+
+    $this->assertSession()->linkNotExists(
+    'View full forecast',
     );
   }
 
