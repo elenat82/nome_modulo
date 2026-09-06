@@ -58,7 +58,12 @@ The current implementation includes:
 - a Drupal asset library providing component-specific CSS and JavaScript;
 - a Drupal JavaScript behavior allowing the summary forecast to reveal the extended forecast without reloading the page;
 - a `display` route parameter supporting summary and extended forecast views. In summary mode, the first forecast day is displayed initially and the remaining days can be revealed through a JavaScript toggle. In extended mode, all forecast days are displayed immediately;
-- functional tests covering access control, module configuration, route parameters, and forecast rendering.
+- a configurable forecast block plugin supporting summary and extended display modes;
+- forecast data caching with cache tags and automatic invalidation when module configuration changes;
+- State API integration for tracking the last cron execution and the last successful forecast refresh;
+- Cron integration for scheduling forecast refresh operations;
+- Queue API integration for processing forecast refreshes outside the cron hook;
+- automated unit, kernel, functional, and functional JavaScript tests.
 
 The default forecast URL:
 
@@ -164,7 +169,14 @@ The current unit test suite covers:
 - writing normalized forecast data to cache with the expected cache metadata;
 - rejecting invalid coordinates before performing an HTTP request;
 - handling HTTP failures;
-- handling invalid provider responses.
+- handling invalid provider responses;
+- storing, retrieving, and deleting forecast operational status through ForecastStatusStorage;
+- recording cron execution timestamps;
+- scheduling forecast refresh queue items;
+- preventing duplicate forecast refresh queue items when work is already pending;
+- invalidating cached forecast data before a queued refresh;
+- recording the timestamp of a successful queued forecast refresh;
+- suspending queue processing when forecast retrieval fails.
 
 Kernel tests are implemented with Drupal's `KernelTestBase` and are used to verify integrations between Drupal services without requiring a complete browser-based Drupal installation.
 
@@ -195,11 +207,11 @@ Functional JavaScript tests are implemented with Drupal's `WebDriverTestBase` an
 
 The current functional JavaScript test suite covers:
 
-expanding the summary forecast through the JavaScript toggle;
-revealing the extended forecast details;
-updating the toggle label and `aria-expanded` state;
-applying the expanded state class to the forecast component;
-collapsing the forecast back to its initial state.
+- expanding the summary forecast through the JavaScript toggle;
+- revealing the extended forecast details;
+- updating the toggle label and `aria-expanded` state;
+- applying the expanded state class to the forecast component;
+- collapsing the forecast back to its initial state.
 
 Run the unit tests from the Drupal project root with:
 
