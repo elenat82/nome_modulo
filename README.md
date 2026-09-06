@@ -12,28 +12,28 @@ The project name was chosen so that everyone can customize it to their liking.
 
 The main goals of this project are to:
 
-* develop a complete Drupal 11 custom module incrementally;
-* apply Drupal coding standards and conventions;
-* use object-oriented PHP and Drupal's service container appropriately;
-* keep code, configuration, documentation, and tests under version control;
-* document architectural and implementation decisions as the project evolves;
-* integrate automated code quality checks and documentation generation.
+- develop a complete Drupal 11 custom module incrementally;
+- apply Drupal coding standards and conventions;
+- use object-oriented PHP and Drupal's service container appropriately;
+- keep code, configuration, documentation, and tests under version control;
+- document architectural and implementation decisions as the project evolves;
+- integrate automated code quality checks and documentation generation.
 
 During development, the module will be used to explore and apply topics such as:
 
-* routing, controllers, responses, menu links, and permissions;
-* services and dependency injection;
-* hooks and events;
-* Plugin API and block plugins;
-* Form API;
-* Render API, Twig templates, translations, and asset libraries;
-* Configuration API and State API;
-* Entity API, Field API, and validation;
-* Database API;
-* Cron and Queue API (probably not Batch API);
-* cacheability and performance;
-* security;
-* automated testing.
+- routing, controllers, responses, menu links, and permissions;
+- services and dependency injection;
+- hooks and events;
+- Plugin API and block plugins;
+- Form API;
+- Render API, Twig templates, translations, and asset libraries;
+- Configuration API and State API;
+- Entity API, Field API, and validation;
+- Database API;
+- Cron and Queue API (probably not Batch API);
+- cacheability and performance;
+- security;
+- automated testing.
 
 ## Current implementation
 
@@ -54,7 +54,7 @@ The current implementation includes:
 - custom permissions controlling access to the forecast page and administrative settings;
 - an administrative menu link for the settings page;
 - object-oriented hook implementations using Drupal's `#[Hook]` attribute;
-- Render API and a dedicated Twig template for forecast output;
+- Render API and dedicated Twig templates for forecast output;
 - a Drupal asset library providing component-specific CSS and JavaScript;
 - a Drupal JavaScript behavior allowing the summary forecast to reveal the extended forecast without reloading the page;
 - a `display` route parameter supporting summary and extended forecast views. In summary mode, the first forecast day is displayed initially and the remaining days can be revealed through a JavaScript toggle. In extended mode, all forecast days are displayed immediately;
@@ -80,9 +80,9 @@ Only summary and extended are accepted as values for the display route parameter
 
 ## Requirements
 
-* Drupal 11.1 or later
-* Composer
-* Drush
+- Drupal 11.1 or later
+- Composer
+- Drush
 
 The local development environment used for this project is based on DDEV.
 
@@ -118,17 +118,17 @@ The forecast page is available at:
 
 The module is being developed incrementally, with small commits intended to keep the Git history readable and to make the evolution of the project easy to follow.
 
-Current code quality and development tooling includes:
+Current code quality and development tooling include:
 
-* Drupal Coding Standards;
-* PHP_CodeSniffer and Drupal Coder;
-* automated functional tests;
-* source-code documentation through PHPDoc/DocBlock comments.
-* generated API documentation through phpDocumentor.
+- Drupal Coding Standards;
+- PHP_CodeSniffer and Drupal Coder;
+- automated unit, kernel, functional, and functional JavaScript tests;
+- source-code documentation through PHPDoc/DocBlock comments.
+- generated API documentation through phpDocumentor.
 
 Additional development tooling will be introduced as the project evolves, including:
-* static analysis;
-* continuous integration with GitHub Actions.
+- static analysis;
+- continuous integration with GitHub Actions.
 
 ## Code quality
 

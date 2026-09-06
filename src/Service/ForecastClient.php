@@ -162,6 +162,20 @@ final class ForecastClient implements ForecastClientInterface {
 
   /**
    * Builds a cache ID for the requested forecast.
+   *
+   * @param float $latitude
+   *   The latitude used for the forecast request.
+   * @param float $longitude
+   *   The longitude used for the forecast request.
+   * @param string $timezone
+   *   The timezone used for the forecast request.
+   * @param int $forecastDays
+   *   The number of forecast days requested.
+   * @param string $temperatureUnit
+   *   The temperature unit used for the forecast request.
+   *
+   * @return string
+   *   The generated cache ID.
    */
   private function buildCacheId(
     float $latitude,

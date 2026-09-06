@@ -42,6 +42,9 @@ final class ForecastController extends ControllerBase {
   /**
    * Builds the weather forecast page.
    *
+   * @param string $display
+   *   The forecast display mode.
+   *
    * @return array
    *   A render array containing the weather forecast page content.
    */

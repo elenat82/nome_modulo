@@ -17,6 +17,9 @@ final class WeatherEventSubscriber implements EventSubscriberInterface {
 
   /**
    * Constructs a WeatherEventSubscriber object.
+   *
+   * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cacheTagsInvalidator
+   *   The cache tag invalidator.
    */
   public function __construct(
     private readonly CacheTagsInvalidatorInterface $cacheTagsInvalidator,
