@@ -3,3 +3,5 @@ type: module
 description: 'Learning and portfolio project intended to put into practice the main concepts and APIs involved in modern Drupal module development.'
 package: Custom
 core_version_requirement: ^11.1
+dependencies:
+  - drupal:node
