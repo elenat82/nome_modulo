@@ -153,7 +153,7 @@ The project's PHP_CodeSniffer rules are defined in `phpcs.xml.dist`.
 
 ## Testing
 
-The project includes automated unit and functional tests.
+The project includes automated unit, kernel and functional tests.
 
 Unit tests are implemented with Drupal's `UnitTestCase` and are used to verify isolated application logic without performing real HTTP requests.
 
@@ -165,6 +165,14 @@ The current unit test suite covers:
 - rejecting invalid coordinates before performing an HTTP request;
 - handling HTTP failures;
 - handling invalid provider responses.
+
+Kernel tests are implemented with Drupal's `KernelTestBase` and are used to verify integrations between Drupal services without requiring a complete browser-based Drupal installation.
+
+The current kernel test suite covers:
+
+- invalidation of forecast cache entries when `nome_modulo.settings` is saved;
+- preservation of forecast cache entries when unrelated configuration is saved;
+- integration between the Configuration API, `WeatherEventSubscriber`, cache tags, and the forecast cache backend.
 
 Functional tests are implemented with Drupal's `BrowserTestBase`.
 
@@ -189,11 +197,24 @@ Run the unit tests from the Drupal project root with:
 ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Unit
 ```
 
+Run the kernel tests from the Drupal project root with:
+
+```bash
+ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Kernel
+```
+
 Run the functional tests from the Drupal project root with:
 
 ```bash
 ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Functional
 ```
+
+Run the complete automated test suite with:
+
+```bash
+ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Unit web/modules/custom/nome_modulo/tests/src/Kernel web/modules/custom/nome_modulo/tests/src/Functional
+```
+
 ## Documentation
 
 Documentation is considered part of the development process rather than a final project deliverable.
