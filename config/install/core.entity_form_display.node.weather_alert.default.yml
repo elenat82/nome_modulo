@@ -1,0 +1,67 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.weather_alert.field_alert_end
+    - field.field.node.weather_alert.field_alert_level
+    - field.field.node.weather_alert.field_alert_start
+    - node.type.weather_alert
+  module:
+    - datetime
+id: node.weather_alert.default
+targetEntityType: node
+bundle: weather_alert
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 2
+    region: content
+    settings: { }
+    third_party_settings: { }
+  field_alert_end:
+    type: datetime_default
+    weight: 6
+    region: content
+    settings: { }
+    third_party_settings: { }
+  field_alert_level:
+    type: options_select
+    weight: 4
+    region: content
+    settings: { }
+    third_party_settings: { }
+  field_alert_start:
+    type: datetime_default
+    weight: 5
+    region: content
+    settings: { }
+    third_party_settings: { }
+  status:
+    type: boolean_checkbox
+    weight: 3
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: { }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: { }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: { }
+hidden:
+  promote: true
+  sticky: true

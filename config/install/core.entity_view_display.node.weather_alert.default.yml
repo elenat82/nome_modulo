@@ -1,0 +1,48 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.weather_alert.field_alert_end
+    - field.field.node.weather_alert.field_alert_level
+    - field.field.node.weather_alert.field_alert_start
+    - node.type.weather_alert
+  module:
+    - datetime
+    - options
+    - user
+id: node.weather_alert.default
+targetEntityType: node
+bundle: weather_alert
+mode: default
+content:
+  field_alert_end:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: { }
+    weight: 3
+    region: content
+  field_alert_level:
+    type: list_default
+    label: above
+    settings: { }
+    third_party_settings: { }
+    weight: 1
+    region: content
+  field_alert_start:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: { }
+    weight: 2
+    region: content
+  links:
+    settings: { }
+    third_party_settings: { }
+    weight: 0
+    region: content
+hidden: { }

@@ -37,10 +37,14 @@ final class ForecastCacheIntegrationTest extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installConfig([
-      'system',
-      'nome_modulo',
-    ]);
+    $this->config('nome_modulo.settings')
+      ->set('location', 'Turin')
+      ->set('latitude', 45.0693)
+      ->set('longitude', 7.6934)
+      ->set('timezone', 'Europe/Rome')
+      ->set('forecast_days', 5)
+      ->set('temperature_unit', 'celsius')
+      ->save();
 
     $this->cache = $this->container->get(
       'cache.nome_modulo',

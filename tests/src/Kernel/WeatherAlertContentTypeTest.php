@@ -27,6 +27,8 @@ final class WeatherAlertContentTypeTest extends KernelTestBase {
     'filter',
     'text',
     'node',
+    'options',
+    'datetime',
     'nome_modulo',
   ];
 
@@ -35,6 +37,9 @@ final class WeatherAlertContentTypeTest extends KernelTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    $this->installEntitySchema('user');
+    $this->installEntitySchema('node');
 
     $this->installConfig([
       'nome_modulo',

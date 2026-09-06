@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - datetime
+  enforced:
+    module:
+      - nome_modulo
+id: node.field_alert_end
+field_name: field_alert_end
+entity_type: node
+type: datetime
+settings:
+  datetime_type: datetime
+module: datetime
+locked: false
+cardinality: 1
+translatable: false
+indexes: { }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+  enforced:
+    module:
+      - nome_modulo
+id: node.field_alert_level
+field_name: field_alert_level
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: advisory
+      label: Advisory
+    -
+      value: warning
+      label: Warning
+    -
+      value: severe
+      label: Severe
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: false
+indexes: { }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alert_end
+    - node.type.weather_alert
+  module:
+    - datetime
+id: node.weather_alert.field_alert_end
+field_name: field_alert_end
+entity_type: node
+bundle: weather_alert
+label: 'Alert end'
+description: ''
+required: true
+translatable: false
+default_value: { }
+default_value_callback: ''
+settings: { }
+field_type: datetime
