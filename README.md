@@ -153,7 +153,7 @@ The project's PHP_CodeSniffer rules are defined in `phpcs.xml.dist`.
 
 ## Testing
 
-The project includes automated unit, kernel and functional tests.
+The project includes automated unit, kernel, functional and functional JavaScript  tests.
 
 Unit tests are implemented with Drupal's `UnitTestCase` and are used to verify isolated application logic without performing real HTTP requests.
 
@@ -191,6 +191,16 @@ The current functional test suite covers:
 - configurable forecast block display length;
 - optional rendering of the full forecast link.
 
+Functional JavaScript tests are implemented with Drupal's `WebDriverTestBase` and use Selenium to verify browser-side JavaScript behavior.
+
+The current functional JavaScript test suite covers:
+
+expanding the summary forecast through the JavaScript toggle;
+revealing the extended forecast details;
+updating the toggle label and `aria-expanded` state;
+applying the expanded state class to the forecast component;
+collapsing the forecast back to its initial state.
+
 Run the unit tests from the Drupal project root with:
 
 ```bash
@@ -209,10 +219,18 @@ Run the functional tests from the Drupal project root with:
 ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Functional
 ```
 
+Functional JavaScript tests require a Selenium-compatible browser environment. The local DDEV environment used for this project uses the `ddev-selenium-standalone-chrome` add-on.
+
+Run the functional JavaScript tests from the Drupal project root with:
+
+```bash
+ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/FunctionalJavascript
+```
+
 Run the complete automated test suite with:
 
 ```bash
-ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Unit web/modules/custom/nome_modulo/tests/src/Kernel web/modules/custom/nome_modulo/tests/src/Functional
+ddev exec ./vendor/bin/phpunit -c phpunit.xml web/modules/custom/nome_modulo/tests/src/Unit web/modules/custom/nome_modulo/tests/src/Kernel web/modules/custom/nome_modulo/tests/src/Functional web/modules/custom/nome_modulo/tests/src/FunctionalJavascript
 ```
 
 ## Documentation
