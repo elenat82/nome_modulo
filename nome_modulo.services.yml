@@ -9,6 +9,11 @@ services:
 
   Drupal\nome_modulo\Service\ForecastClientInterface: '@nome_modulo.forecast_client'
 
+  nome_modulo.forecast_status_storage:
+    class: Drupal\nome_modulo\ForecastStatusStorage
+    arguments:
+      - '@state'
+
   cache.nome_modulo:
     class: Drupal\Core\Cache\CacheBackendInterface
     tags:
