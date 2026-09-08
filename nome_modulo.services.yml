@@ -28,5 +28,11 @@ services:
     class: Drupal\nome_modulo\EventSubscriber\WeatherEventSubscriber
     arguments:
       - '@cache_tags.invalidator'
+      - '@logger.channel.nome_modulo'
     tags:
       - { name: event_subscriber }
+
+  logger.channel.nome_modulo:
+    parent: logger.channel_base
+    arguments:
+      - 'nome_modulo'
