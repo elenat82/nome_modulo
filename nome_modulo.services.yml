@@ -9,6 +9,13 @@ services:
 
   Drupal\nome_modulo\Service\ForecastClientInterface: '@nome_modulo.forecast_client'
 
+  nome_modulo.location_geocoder:
+    class: Drupal\nome_modulo\Service\OpenMeteoLocationGeocoder
+    arguments:
+      - '@http_client'
+
+  Drupal\nome_modulo\Service\LocationGeocoderInterface: '@nome_modulo.location_geocoder'
+
   nome_modulo.forecast_status_storage:
     class: Drupal\nome_modulo\ForecastStatusStorage
     arguments:
