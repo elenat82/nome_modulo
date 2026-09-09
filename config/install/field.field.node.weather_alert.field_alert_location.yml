@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alert_location
+    - node.type.weather_alert
+id: node.weather_alert.field_alert_location
+field_name: field_alert_location
+entity_type: node
+bundle: weather_alert
+label: 'Alert location'
+description: 'The configured forecast location when this alert was created.'
+required: false
+translatable: false
+default_value: { }
+default_value_callback: ''
+settings: { }
+field_type: string

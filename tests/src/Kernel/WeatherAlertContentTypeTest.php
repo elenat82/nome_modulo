@@ -66,7 +66,7 @@ final class WeatherAlertContentTypeTest extends KernelTestBase {
     );
 
     $this->assertSame(
-      'Provides weather alerts for a geographical area.',
+      'Provides editorial weather alerts for the configured forecast location.',
       $nodeType->getDescription(),
     );
 

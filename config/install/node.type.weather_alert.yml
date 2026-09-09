@@ -6,7 +6,7 @@ dependencies:
       - nome_modulo
 name: 'Weather alert'
 type: weather_alert
-description: 'Provides weather alerts for a geographical area.'
+description: 'Provides editorial weather alerts for the configured forecast location.'
 help: null
 new_revision: true
 preview_mode: 1

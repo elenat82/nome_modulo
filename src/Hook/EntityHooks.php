@@ -11,6 +11,7 @@ use Drupal\nome_modulo\Event\NomeModuloEvents;
 use Drupal\nome_modulo\Event\WeatherAlertCreatedEvent;
 use Drupal\node\NodeInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Implements hooks related to entities.
@@ -22,10 +23,47 @@ final class EntityHooks {
    *
    * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $eventDispatcher
    *   The event dispatcher.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The configuration factory.
    */
   public function __construct(
     private readonly EventDispatcherInterface $eventDispatcher,
+    private readonly ConfigFactoryInterface $configFactory,
   ) {}
+
+  /**
+ * Stores the configured location on newly created Weather alerts.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity being saved.
+ */
+  #[Hook('entity_presave')]
+  public function entityPresave(EntityInterface $entity): void {
+    if (
+    !$entity instanceof NodeInterface ||
+    $entity->bundle() !== 'weather_alert' ||
+    !$entity->isNew() ||
+    !$entity->hasField('field_alert_location') ||
+    !$entity->get('field_alert_location')->isEmpty()
+    ) {
+      return;
+    }
+
+    $location = trim(
+    (string) $this->configFactory
+      ->get('nome_modulo.settings')
+      ->get('location'),
+    );
+
+    if ($location === '') {
+      return;
+    }
+
+    $entity->set(
+    'field_alert_location',
+    $location,
+    );
+  }
 
   /**
    * Dispatches an event when a Weather alert is created.

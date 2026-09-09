@@ -4,6 +4,7 @@ dependencies:
   config:
     - field.field.node.weather_alert.field_alert_end
     - field.field.node.weather_alert.field_alert_level
+    - field.field.node.weather_alert.field_alert_location
     - field.field.node.weather_alert.field_alert_start
     - node.type.weather_alert
   module:
@@ -22,12 +23,20 @@ content:
       timezone_override: ''
       format_type: medium
     third_party_settings: { }
-    weight: 3
+    weight: 4
     region: content
   field_alert_level:
     type: list_default
     label: above
     settings: { }
+    third_party_settings: { }
+    weight: 2
+    region: content
+  field_alert_location:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
     third_party_settings: { }
     weight: 1
     region: content
@@ -38,7 +47,7 @@ content:
       timezone_override: ''
       format_type: medium
     third_party_settings: { }
-    weight: 2
+    weight: 3
     region: content
   links:
     settings: { }

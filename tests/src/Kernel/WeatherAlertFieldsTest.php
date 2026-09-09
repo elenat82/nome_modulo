@@ -148,11 +148,57 @@ final class WeatherAlertFieldsTest extends KernelTestBase {
       $alertEnd->isRequired(),
     );
 
+    $alertLocationStorage = FieldStorageConfig::load(
+    'node.field_alert_location',
+    );
+
+    $this->assertNotNull($alertLocationStorage);
+
+    $this->assertSame(
+    'string',
+    $alertLocationStorage->getType(),
+    );
+
+    $this->assertSame(
+    255,
+    $alertLocationStorage->getSetting('max_length'),
+    );
+
+    $this->assertSame(
+    ['nome_modulo'],
+    $this->config('field.storage.node.field_alert_location')
+      ->get('dependencies.enforced.module'),
+    );
+
+    $alertLocation = FieldConfig::load(
+    'node.weather_alert.field_alert_location',
+    );
+
+    $this->assertNotNull($alertLocation);
+
+    $this->assertSame(
+    'Alert location',
+    $alertLocation->label(),
+    );
+
+    $this->assertFalse(
+    $alertLocation->isRequired(),
+    );
+
     $formDisplay = EntityFormDisplay::load(
     'node.weather_alert.default',
     );
 
     $this->assertNotNull($formDisplay);
+
+    $this->assertNull(
+    $formDisplay->getComponent('field_alert_location'),
+    );
+
+    $this->assertTrue(
+    $this->config('core.entity_form_display.node.weather_alert.default')
+      ->get('hidden.field_alert_location'),
+    );
 
     $this->assertSame(
     'options_select',
@@ -174,6 +220,16 @@ final class WeatherAlertFieldsTest extends KernelTestBase {
     );
 
     $this->assertNotNull($viewDisplay);
+
+    $this->assertSame(
+    'string',
+    $viewDisplay->getComponent('field_alert_location')['type'],
+    );
+
+    $this->assertSame(
+    'above',
+    $viewDisplay->getComponent('field_alert_location')['label'],
+    );
 
     $this->assertSame(
     'list_default',
