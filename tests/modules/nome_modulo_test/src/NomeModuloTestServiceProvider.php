@@ -7,6 +7,7 @@ namespace Drupal\nome_modulo_test;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
 use Drupal\nome_modulo_test\Service\FakeForecastClient;
+use Drupal\nome_modulo_test\Service\FakeLocationGeocoder;
 
 /**
  * Overrides services for Nome Modulo tests.
@@ -21,6 +22,10 @@ final class NomeModuloTestServiceProvider extends ServiceProviderBase {
       $container
         ->getDefinition('nome_modulo.forecast_client')
         ->setClass(FakeForecastClient::class)
+        ->setArguments([]);
+      $container
+        ->getDefinition('nome_modulo.location_geocoder')
+        ->setClass(FakeLocationGeocoder::class)
         ->setArguments([]);
     }
   }

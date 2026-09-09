@@ -6,6 +6,10 @@ namespace Drupal\nome_modulo\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
+use Drupal\nome_modulo\Service\LocationGeocoderInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the Nome Modulo settings form.
@@ -21,6 +25,53 @@ final class SettingsForm extends ConfigFormBase {
    * Maximum number of forecast days supported by the provider.
    */
   private const MAX_FORECAST_DAYS = 16;
+
+  /**
+   * The location geocoder.
+   *
+   * @var \Drupal\nome_modulo\Service\LocationGeocoderInterface
+   */
+  protected LocationGeocoderInterface $locationGeocoder;
+
+  /**
+   * Constructs a SettingsForm object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The configuration factory.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfigManager
+   *   The typed configuration manager.
+   * @param \Drupal\nome_modulo\Service\LocationGeocoderInterface $locationGeocoder
+   *   The location geocoder.
+   */
+  public function __construct(
+    ConfigFactoryInterface $configFactory,
+    TypedConfigManagerInterface $typedConfigManager,
+    LocationGeocoderInterface $locationGeocoder,
+  ) {
+    parent::__construct(
+    $configFactory,
+    $typedConfigManager,
+    );
+
+    $this->locationGeocoder = $locationGeocoder;
+  }
+
+  /**
+   * Creates a SettingsForm instance from the service container.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The service container.
+   *
+   * @return static
+   *   The instantiated settings form.
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+    $container->get('config.factory'),
+    $container->get('config.typed'),
+    $container->get(LocationGeocoderInterface::class),
+    );
+  }
 
   /**
    * Returns the unique ID of the settings form.
@@ -47,80 +98,114 @@ final class SettingsForm extends ConfigFormBase {
   /**
    * Builds the module settings form.
    *
-   * Provides fields for configuring the location, coordinates, timezone,
-   * number of forecast days and temperature unit.
+   * Provides location search and forecast configuration fields. Coordinates
+   * and timezone are derived from the selected geocoding result.
    *
    * @param array $form
    *   The form structure.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
+   *   The current form state.
    *
    * @return array
    *   The complete form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
-    $form['location'] = [
-      '#type' => 'textfield',
+
+    $config = $this->config(self::CONFIG_NAME);
+
+    $form['location_settings'] = [
+      '#type' => 'details',
       '#title' => $this->t('Location'),
       '#description' => $this->t(
-        'Enter the human-readable name displayed with the forecast.',
+    'Search for a location and select a result to update the coordinates and timezone used for the forecast.',
       ),
-      '#required' => TRUE,
+      '#open' => TRUE,
+    ];
+
+    $form['location_settings']['current_location'] = [
+      '#type' => 'item',
+      '#title' => $this->t('Current location'),
+      '#markup' => $this->t(
+    '@location — @latitude, @longitude — @timezone',
+    [
+      '@location' => (string) $config->get('location'),
+      '@latitude' => (string) $config->get('latitude'),
+      '@longitude' => (string) $config->get('longitude'),
+      '@timezone' => (string) $config->get('timezone'),
+    ],
+      ),
+    ];
+
+    $form['location_settings']['location_search'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Search location'),
+      '#description' => $this->t(
+    'Enter a city or a more specific query such as "Turin, Italy".',
+      ),
       '#maxlength' => 128,
+    ];
+
+    $form['location_settings']['search_location'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Search'),
+      '#name' => 'search_location',
+      '#submit' => [
+        '::searchLocation',
+      ],
+      '#limit_validation_errors' => [
+      ['location_search'],
+      ],
+    ];
+
+    $locationCandidates = $form_state->get('location_candidates');
+
+    if (is_array($locationCandidates)) {
+      if ($locationCandidates === []) {
+        $form['location_settings']['search_results'] = [
+          '#type' => 'item',
+          '#title' => $this->t('Search results'),
+          '#markup' => $this->t(
+        'No matching locations were found, or the geocoding service is temporarily unavailable.',
+          ),
+        ];
+      }
+      else {
+        $options = [];
+
+        foreach ($locationCandidates as $index => $locationCandidate) {
+          $options[$index] = $this->buildLocationLabel(
+            $locationCandidate,
+          );
+        }
+
+        $form['location_settings']['location_candidate'] = [
+          '#type' => 'radios',
+          '#title' => $this->t('Search results'),
+          '#description' => $this->t(
+        'Select the location to use and then save the configuration.',
+          ),
+          '#options' => $options,
+        ];
+      }
+    }
+
+    $form['location'] = [
+      '#type' => 'hidden',
       '#config_target' => self::CONFIG_NAME . ':location',
     ];
 
-    $form['coordinates'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Coordinates'),
-      '#description' => $this->t(
-        'Coordinates are used to request the weather forecast.',
-      ),
-      '#open' => TRUE,
-    ];
-
-    $form['coordinates']['latitude'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Latitude'),
-      '#description' => $this->t(
-        'Enter a value between -90 and 90.',
-      ),
-      '#required' => TRUE,
-      '#min' => -90,
-      '#max' => 90,
-      '#step' => 0.000001,
+    $form['latitude'] = [
+      '#type' => 'hidden',
       '#config_target' => self::CONFIG_NAME . ':latitude',
     ];
 
-    $form['coordinates']['longitude'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Longitude'),
-      '#description' => $this->t(
-        'Enter a value between -180 and 180.',
-      ),
-      '#required' => TRUE,
-      '#min' => -180,
-      '#max' => 180,
-      '#step' => 0.000001,
+    $form['longitude'] = [
+      '#type' => 'hidden',
       '#config_target' => self::CONFIG_NAME . ':longitude',
     ];
 
-    $form['forecast'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Forecast options'),
-      '#open' => TRUE,
-    ];
-
-    $timezones = \DateTimeZone::listIdentifiers();
-
-    $form['forecast']['timezone'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Timezone'),
-      '#description' => $this->t(
-        'Select the timezone used to group the daily forecast.',
-      ),
-      '#options' => array_combine($timezones, $timezones),
-      '#required' => TRUE,
+    $form['timezone'] = [
+      '#type' => 'hidden',
       '#config_target' => self::CONFIG_NAME . ':timezone',
     ];
 
@@ -152,94 +237,169 @@ final class SettingsForm extends ConfigFormBase {
   }
 
   /**
+   * Searches for matching locations.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current form state.
+   */
+  public function searchLocation(
+    array &$form,
+    FormStateInterface $form_state,
+  ): void {
+    $query = trim(
+    (string) $form_state->getValue('location_search'),
+    );
+
+    $form_state->setValue(
+    'location_search',
+    $query,
+    );
+
+    $form_state->unsetValue('location_candidate');
+
+    $userInput = $form_state->getUserInput();
+    unset($userInput['location_candidate']);
+    $form_state->setUserInput($userInput);
+
+    $form_state->set(
+    'location_candidates',
+    $this->locationGeocoder->search($query),
+    );
+
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Builds a human-readable location label.
+   *
+   * @param array $location
+   *   The normalized location. Expected keys are name, country, admin1,
+   *   latitude, longitude, and timezone.
+   *
+   * @return string
+   *   The location label.
+   */
+  private function buildLocationLabel(array $location): string {
+    $parts = [
+      $location['name'],
+    ];
+
+    foreach ([
+      $location['admin1'],
+      $location['country'],
+    ] as $part) {
+      if (
+      $part !== NULL &&
+      !in_array($part, $parts, TRUE)
+      ) {
+        $parts[] = $part;
+      }
+    }
+
+    return implode(', ', $parts);
+  }
+
+  /**
    * Validates the settings form.
    */
   public function validateForm(
     array &$form,
     FormStateInterface $form_state,
   ): void {
-    $location = trim((string) $form_state->getValue('location'));
+    $triggeringElement = $form_state->getTriggeringElement();
 
-    $form_state->setValue('location', $location);
-
-    if (mb_strlen($location) < 2) {
-      $form_state->setErrorByName(
-      'location',
-      $this->t(
-        'The location must contain at least two characters.',
-      ),
+    if (
+    isset($triggeringElement['#name']) &&
+    $triggeringElement['#name'] === 'search_location'
+    ) {
+      $query = trim(
+        (string) $form_state->getValue('location_search'),
       );
+
+      $form_state->setValue(
+        'location_search',
+        $query,
+      );
+
+      if (mb_strlen($query) < 2) {
+        $form_state->setErrorByName(
+          'location_search',
+          $this->t(
+            'The location search must contain at least two characters.',
+          ),
+        );
+      }
+
+      if (ctype_digit($query)) {
+        $form_state->setErrorByName(
+        'location_search',
+        $this->t(
+        'Enter a location name rather than a numeric postal code.',
+        ),
+        );
+      }
+
+      return;
     }
 
-    $latitude = filter_var(
-    $form_state->getValue('latitude'),
-    FILTER_VALIDATE_FLOAT,
+    $locationCandidates = $form_state->get(
+    'location_candidates',
+    );
+
+    $selectedCandidate = $form_state->getValue(
+    'location_candidate',
     );
 
     if (
-    $latitude === FALSE ||
-    $latitude < -90 ||
-    $latitude > 90
+    $selectedCandidate !== NULL &&
+    is_array($locationCandidates) &&
+    isset($locationCandidates[$selectedCandidate])
     ) {
-      $form_state->setErrorByName(
-      'latitude',
-      $this->t(
-        'The latitude must be a number between -90 and 90.',
-      ),
+      $location = $locationCandidates[$selectedCandidate];
+
+      $form_state->setValue(
+        'location',
+        $this->buildLocationLabel($location),
+      );
+
+      $form_state->setValue(
+        'latitude',
+        $location['latitude'],
+      );
+
+      $form_state->setValue(
+        'longitude',
+        $location['longitude'],
+      );
+
+      $form_state->setValue(
+        'timezone',
+        $location['timezone'],
       );
     }
+    else {
+      $config = $this->config(self::CONFIG_NAME);
 
-    $longitude = filter_var(
-    $form_state->getValue('longitude'),
-    FILTER_VALIDATE_FLOAT,
-    );
-
-    if (
-    $longitude === FALSE ||
-    $longitude < -180 ||
-    $longitude > 180
-    ) {
-      $form_state->setErrorByName(
-      'longitude',
-      $this->t(
-        'The longitude must be a number between -180 and 180.',
-      ),
+      $form_state->setValue(
+        'location',
+        $config->get('location'),
       );
-    }
 
-    $timezone = (string) $form_state->getValue('timezone');
-
-    if (!in_array(
-    $timezone,
-    \DateTimeZone::listIdentifiers(),
-    TRUE,
-    )) {
-      $form_state->setErrorByName(
-      'timezone',
-      $this->t('Select a valid timezone.'),
+      $form_state->setValue(
+        'latitude',
+        $config->get('latitude'),
       );
-    }
 
-    $forecastDays = filter_var(
-    $form_state->getValue('forecast_days'),
-    FILTER_VALIDATE_INT,
-    [
-      'options' => [
-        'min_range' => 1,
-        'max_range' => self::MAX_FORECAST_DAYS,
-      ],
-    ],
-    );
+      $form_state->setValue(
+        'longitude',
+        $config->get('longitude'),
+      );
 
-    if ($forecastDays === FALSE) {
-      $form_state->setErrorByName(
-      'forecast_days',
-      $this->t(
-        'The number of forecast days must be between 1 and @maximum.',
-        [
-          '@maximum' => self::MAX_FORECAST_DAYS,
-        ],
-      ),
+      $form_state->setValue(
+        'timezone',
+        $config->get('timezone'),
       );
     }
 

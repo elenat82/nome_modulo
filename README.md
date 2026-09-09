@@ -29,11 +29,11 @@ During development, the module will be used to explore and apply topics such as:
 - Render API, Twig templates, translations, and asset libraries;
 - Configuration API and State API;
 - Entity API, Field API, and validation;
-- Database API;
-- Cron and Queue API (probably not Batch API);
+- Cron and Queue API;
 - cacheability and performance;
 - security;
 - automated testing.
+Database API and Batch API are intentionally not covered because the current module does not have a use case that would justify introducing them without adding artificial complexity.
 
 ## Current implementation
 
@@ -50,9 +50,18 @@ The current implementation includes:
 - constructor dependency injection through `ForecastClientInterface`;
 - integration with the Open-Meteo API;
 - normalization of external weather data into an internal forecast structure;
-- configurable location, coordinates, timezone, forecast length, and temperature unit through an administrative settings form;
+- a dedicated `LocationGeocoder` service integrating with the Open-Meteo Geocoding API;
+- configurable forecast location through geocoded location search;
+- multiple candidate selection for ambiguous location searches;
+- automatic derivation of latitude, longitude, and timezone from the selected location;
+- forecast retrieval using the geocoded coordinates;
 - custom permissions controlling access to the forecast page and administrative settings;
 - an administrative menu link for the settings page;
+- a `Weather alert` content type provided through default configuration;
+- configurable alert level, start date and end date fields;
+- custom cross-field validation requiring the alert end date to be later than the start date;
+- a custom event dispatched when a Weather alert is created;
+- event subscriber integration for logging newly created Weather alerts;
 - object-oriented hook implementations using Drupal's `#[Hook]` attribute;
 - Render API and dedicated Twig templates for forecast output;
 - a Drupal asset library providing component-specific CSS and JavaScript;
@@ -123,7 +132,7 @@ Current code quality and development tooling include:
 - Drupal Coding Standards;
 - PHP_CodeSniffer and Drupal Coder;
 - automated unit, kernel, functional, and functional JavaScript tests;
-- source-code documentation through PHPDoc/DocBlock comments.
+- source-code documentation through PHPDoc/DocBlock comments;
 - generated API documentation through phpDocumentor.
 
 Additional development tooling will be introduced as the project evolves, including:
@@ -158,7 +167,7 @@ The project's PHP_CodeSniffer rules are defined in `phpcs.xml.dist`.
 
 ## Testing
 
-The project includes automated unit, kernel, functional and functional JavaScript  tests.
+The project includes automated unit, kernel, functional and functional JavaScript tests.
 
 Unit tests are implemented with Drupal's `UnitTestCase` and are used to verify isolated application logic without performing real HTTP requests.
 
@@ -176,7 +185,12 @@ The current unit test suite covers:
 - preventing duplicate forecast refresh queue items when work is already pending;
 - invalidating cached forecast data before a queued refresh;
 - recording the timestamp of a successful queued forecast refresh;
-- suspending queue processing when forecast retrieval fails.
+- suspending queue processing when forecast retrieval fails;
+- normalizing Open-Meteo geocoding responses into internal location data;
+- avoiding geocoding HTTP requests for invalid search queries;
+- handling empty geocoding results and HTTP failures;
+- dispatching the Weather alert created event only for Weather alert nodes;
+- handling the Weather alert created event through the event subscriber;
 
 Kernel tests are implemented with Drupal's `KernelTestBase` and are used to verify integrations between Drupal services without requiring a complete browser-based Drupal installation.
 
@@ -184,7 +198,11 @@ The current kernel test suite covers:
 
 - invalidation of forecast cache entries when `nome_modulo.settings` is saved;
 - preservation of forecast cache entries when unrelated configuration is saved;
-- integration between the Configuration API, `WeatherEventSubscriber`, cache tags, and the forecast cache backend.
+- integration between the Configuration API, `WeatherEventSubscriber`, cache tags, and the forecast cache backend;
+- installation of the Weather alert content type;
+- installation and configuration of Weather alert fields, widgets, and formatters;
+- enforced configuration dependencies for Weather alert field storage;
+- Weather alert date-range validation;
 
 Functional tests are implemented with Drupal's `BrowserTestBase`.
 
@@ -196,8 +214,13 @@ The current functional test suite covers:
 - rejection of invalid display route parameters with an HTTP 404 response;
 - forecast rendering using a test double instead of the external Open-Meteo API;
 - access to the administrative settings form;
-- persistence of forecast configuration values, including location, coordinates, timezone, forecast length, and temperature unit;
-- custom settings form validation;
+- location search through the geocoding service;
+- multiple candidates for ambiguous location searches;
+- validation of short and numeric-only location searches;
+- persistence of a selected geocoded location, including coordinates and timezone;
+- preservation of the current location when only forecast settings are changed;
+- forecast-day boundary validation;
+- persistence of forecast length and temperature unit;
 - forecast block access control;
 - default and extended forecast block rendering;
 - configurable forecast block display length;
