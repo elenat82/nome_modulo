@@ -21,6 +21,15 @@ final class OpenMeteoLocationGeocoder implements LocationGeocoderInterface {
    * The maximum number of location candidates to request.
    */
   private const RESULT_LIMIT = 5;
+  /**
+   * The connection timeout in seconds.
+   */
+  private const CONNECT_TIMEOUT = 5;
+
+  /**
+   * The request timeout in seconds.
+   */
+  private const REQUEST_TIMEOUT = 10;
 
   /**
    * Constructs an OpenMeteoLocationGeocoder object.
@@ -44,16 +53,19 @@ final class OpenMeteoLocationGeocoder implements LocationGeocoderInterface {
 
     try {
       $response = $this->httpClient->request(
-        'GET',
-        self::ENDPOINT,
-        [
-          'query' => [
-            'name' => $query,
-            'count' => self::RESULT_LIMIT,
-            'format' => 'json',
-            'language' => 'en',
-          ],
+      'GET',
+      self::ENDPOINT,
+      [
+        'query' => [
+          'name' => $query,
+          'count' => self::RESULT_LIMIT,
+          'format' => 'json',
+          'language' => 'en',
         ],
+        'connect_timeout' => self::CONNECT_TIMEOUT,
+        'timeout' => self::REQUEST_TIMEOUT,
+        'allow_redirects' => FALSE,
+      ],
       );
 
       $data = json_decode(
@@ -68,45 +80,65 @@ final class OpenMeteoLocationGeocoder implements LocationGeocoderInterface {
     }
 
     if (
-      !is_array($data) ||
-      !isset($data['results']) ||
-      !is_array($data['results'])
+    !is_array($data) ||
+    !isset($data['results']) ||
+    !is_array($data['results'])
     ) {
       return [];
     }
 
     $locations = [];
+    $validTimezones = \DateTimeZone::listIdentifiers();
 
     foreach ($data['results'] as $result) {
       if (
-        !is_array($result) ||
-        !isset(
-          $result['name'],
-          $result['latitude'],
-          $result['longitude'],
-          $result['timezone'],
-        ) ||
-        !is_string($result['name']) ||
-        !is_numeric($result['latitude']) ||
-        !is_numeric($result['longitude']) ||
-        !is_string($result['timezone'])
+      !is_array($result) ||
+      !isset(
+        $result['name'],
+        $result['latitude'],
+        $result['longitude'],
+        $result['timezone'],
+      ) ||
+      !is_string($result['name']) ||
+      trim($result['name']) === '' ||
+      !is_numeric($result['latitude']) ||
+      !is_numeric($result['longitude']) ||
+      !is_string($result['timezone'])
+      ) {
+        continue;
+      }
+
+      $latitude = (float) $result['latitude'];
+      $longitude = (float) $result['longitude'];
+      $timezone = $result['timezone'];
+
+      if (
+      $latitude < -90 ||
+      $latitude > 90 ||
+      $longitude < -180 ||
+      $longitude > 180 ||
+      !in_array(
+        $timezone,
+        $validTimezones,
+        TRUE,
+      )
       ) {
         continue;
       }
 
       $locations[] = [
-        'name' => $result['name'],
+        'name' => trim($result['name']),
         'country' => isset($result['country']) &&
         is_string($result['country'])
-          ? $result['country']
+          ? trim($result['country'])
           : NULL,
         'admin1' => isset($result['admin1']) &&
         is_string($result['admin1'])
-          ? $result['admin1']
+          ? trim($result['admin1'])
           : NULL,
-        'latitude' => (float) $result['latitude'],
-        'longitude' => (float) $result['longitude'],
-        'timezone' => $result['timezone'],
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+        'timezone' => $timezone,
       ];
     }
 

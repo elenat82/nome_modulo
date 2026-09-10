@@ -38,6 +38,16 @@ final class ForecastClientTest extends UnitTestCase {
   private TimeInterface&MockObject $time;
 
   /**
+   * The connection timeout in seconds.
+   */
+  private const CONNECT_TIMEOUT = 5;
+
+  /**
+   * The request timeout in seconds.
+   */
+  private const REQUEST_TIMEOUT = 10;
+
+  /**
    * Sets up the test dependencies.
    */
   protected function setUp(): void {
@@ -138,7 +148,9 @@ final class ForecastClientTest extends UnitTestCase {
           'headers' => [
             'Accept' => 'application/json',
           ],
-          'timeout' => 10,
+          'connect_timeout' => self::CONNECT_TIMEOUT,
+          'timeout' => self::REQUEST_TIMEOUT,
+          'allow_redirects' => FALSE,
         ],
       )
       ->willReturn($response);

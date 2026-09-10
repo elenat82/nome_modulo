@@ -17,6 +17,16 @@ use Drupal\nome_modulo\Cache\ForecastCache;
 final class ForecastClient implements ForecastClientInterface {
 
   /**
+   * The connection timeout in seconds.
+   */
+  private const CONNECT_TIMEOUT = 5;
+
+  /**
+   * The request timeout in seconds.
+   */
+  private const REQUEST_TIMEOUT = 10;
+
+  /**
    * The Open-Meteo forecast API endpoint.
    */
   private const API_URL = 'https://api.open-meteo.com/v1/forecast';
@@ -122,7 +132,9 @@ final class ForecastClient implements ForecastClientInterface {
           'headers' => [
             'Accept' => 'application/json',
           ],
-          'timeout' => 10,
+          'connect_timeout' => self::CONNECT_TIMEOUT,
+          'timeout' => self::REQUEST_TIMEOUT,
+          'allow_redirects' => FALSE,
         ],
       );
 

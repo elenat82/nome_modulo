@@ -11,6 +11,7 @@ use Drupal\nome_modulo\Hook\EntityHooks;
 use Drupal\node\NodeInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Tests the entity hooks.
@@ -29,6 +30,10 @@ final class EntityHooksTest extends TestCase {
       EventDispatcherInterface::class,
     );
 
+    $configFactory = $this->createMock(
+    ConfigFactoryInterface::class,
+    );
+
     $eventDispatcher->expects($this->once())
       ->method('dispatch')
       ->with(
@@ -41,7 +46,10 @@ final class EntityHooksTest extends TestCase {
       )
       ->willReturnArgument(0);
 
-    $hooks = new EntityHooks($eventDispatcher);
+    $hooks = new EntityHooks(
+    $eventDispatcher,
+    $configFactory,
+    );
 
     $hooks->entityInsert($alert);
   }
@@ -58,10 +66,17 @@ final class EntityHooksTest extends TestCase {
       EventDispatcherInterface::class,
     );
 
+    $configFactory = $this->createMock(
+    ConfigFactoryInterface::class,
+    );
+
     $eventDispatcher->expects($this->never())
       ->method('dispatch');
 
-    $hooks = new EntityHooks($eventDispatcher);
+    $hooks = new EntityHooks(
+    $eventDispatcher,
+    $configFactory,
+    );
 
     $hooks->entityInsert($node);
   }
@@ -76,10 +91,17 @@ final class EntityHooksTest extends TestCase {
       EventDispatcherInterface::class,
     );
 
+    $configFactory = $this->createMock(
+    ConfigFactoryInterface::class,
+    );
+
     $eventDispatcher->expects($this->never())
       ->method('dispatch');
 
-    $hooks = new EntityHooks($eventDispatcher);
+    $hooks = new EntityHooks(
+    $eventDispatcher,
+    $configFactory,
+    );
 
     $hooks->entityInsert($entity);
   }
