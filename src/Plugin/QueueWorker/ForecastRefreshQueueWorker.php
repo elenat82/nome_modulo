@@ -55,10 +55,10 @@ final class ForecastRefreshQueueWorker extends QueueWorkerBase implements Contai
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    private readonly ForecastClientInterface $forecastClient,
-    private readonly ForecastStatusStorage $forecastStatusStorage,
-    private readonly CacheTagsInvalidatorInterface $cacheTagsInvalidator,
-    private readonly TimeInterface $time,
+    protected ForecastClientInterface $forecastClient,
+    protected ForecastStatusStorage $forecastStatusStorage,
+    protected CacheTagsInvalidatorInterface $cacheTagsInvalidator,
+    protected TimeInterface $time,
   ) {
     parent::__construct(
       $configuration,

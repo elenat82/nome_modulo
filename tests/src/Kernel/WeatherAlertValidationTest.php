@@ -103,11 +103,6 @@ final class WeatherAlertValidationTest extends KernelTestBase {
         'field_alert_end' => $end,
       ]);
 
-    $this->assertInstanceOf(
-      NodeInterface::class,
-      $alert,
-    );
-
     return $alert;
   }
 

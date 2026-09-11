@@ -54,7 +54,7 @@ final class ForecastBlock extends BlockBase implements ContainerFactoryPluginInt
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    private readonly ForecastClientInterface $forecastClient,
+    protected ForecastClientInterface $forecastClient,
   ) {
     parent::__construct(
       $configuration,

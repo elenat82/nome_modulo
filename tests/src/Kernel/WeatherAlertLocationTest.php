@@ -143,11 +143,6 @@ final class WeatherAlertLocationTest extends KernelTestBase {
         'field_alert_end' => '2026-09-09T12:00:00',
       ]);
 
-    $this->assertInstanceOf(
-      NodeInterface::class,
-      $alert,
-    );
-
     return $alert;
   }
 

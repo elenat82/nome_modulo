@@ -14,7 +14,7 @@ final class FakeForecastClient implements ForecastClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function getForecast(): ?array {
+  public function getForecast(): array {
     return [
       'location' => 'Test location',
       'timezone' => 'Europe/Rome',

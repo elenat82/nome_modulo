@@ -165,6 +165,26 @@ and run PHP_CodeSniffer again to verify that no violations remain.
 
 The project's PHP_CodeSniffer rules are defined in `phpcs.xml.dist`.
 
+## Static analysis
+
+The module is analysed with PHPStan and `phpstan-drupal` at level 5.
+
+PHPStan is installed at the Drupal project level rather than inside this module repository. In a Drupal project containing this module, install the required development dependencies with:
+
+```bash
+ddev composer require --dev phpstan/phpstan mglaman/phpstan-drupal
+```
+
+The repository provides its PHPStan configuration in `phpstan.neon.dist`.
+
+From the Drupal project root, run the static analysis with:
+
+```bash
+ddev exec ./vendor/bin/phpstan analyse -c web/modules/custom/nome_modulo/phpstan.neon.dist
+```
+
+The configuration analyses both the module source code and its test suite.
+
 ## Testing
 
 The project includes automated unit, kernel, functional and functional JavaScript tests.
