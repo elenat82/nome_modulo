@@ -43,3 +43,11 @@ services:
     parent: logger.channel_base
     arguments:
       - 'nome_modulo'
+
+  nome_modulo.weather_alert_uninstall_validator:
+    class: Drupal\nome_modulo\Extension\WeatherAlertUninstallValidator
+    arguments:
+      - '@entity_type.manager'
+      - '@string_translation'
+    tags:
+      - { name: module_install.uninstall_validator }
