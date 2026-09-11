@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality-and-tests:
+    name: Quality and tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout module
+        uses: actions/checkout@v6
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, sqlite3, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+
+      - name: Create Drupal project
+        run: |
+          composer create-project drupal/recommended-project:^11.1 "$RUNNER_TEMP/drupal" --no-interaction --prefer-dist
+
+      - name: Install development tools
+        working-directory: ${{ runner.temp }}/drupal
+        run: |
+          composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer config allow-plugins.phpstan/extension-installer true
+          composer require --dev drupal/core-dev:^11 drupal/coder phpstan/phpstan mglaman/phpstan-drupal --no-interaction --with-all-dependencies
+
+      - name: Install module in Drupal
+        run: |
+          mkdir -p "$RUNNER_TEMP/drupal/web/modules/custom/nome_modulo"
+          rsync -a \
+            --exclude='.git' \
+            "$GITHUB_WORKSPACE/" \
+            "$RUNNER_TEMP/drupal/web/modules/custom/nome_modulo/"
+
+      - name: Run PHPCS
+        working-directory: ${{ runner.temp }}/drupal/web/modules/custom/nome_modulo
+        run: |
+          "$RUNNER_TEMP/drupal/vendor/bin/phpcs"
+
+      - name: Run PHPStan
+        working-directory: ${{ runner.temp }}/drupal
+        run: |
+          ./vendor/bin/phpstan analyse -c web/modules/custom/nome_modulo/phpstan.neon.dist
+
+      - name: Prepare test environment
+        working-directory: ${{ runner.temp }}/drupal
+        run: |
+          mkdir -p web/sites/default/files
+          mkdir -p web/sites/simpletest/browser_output
+          touch web/sites/default/files/db.sqlite
+          chmod -R 777 web/sites
+
+      - name: Start web server
+        working-directory: ${{ runner.temp }}/drupal
+        run: |
+          php -S 127.0.0.1:8080 -t web > "$RUNNER_TEMP/php-server.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/php-server.pid"
+
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8080 > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat "$RUNNER_TEMP/php-server.log"
+          exit 1
+
+      - name: Start ChromeDriver
+        run: |
+          chromedriver \
+            --port=9515 \
+            --allowed-ips="" \
+            --allowed-origins="*" \
+            > "$RUNNER_TEMP/chromedriver.log" 2>&1 &
+
+          echo $! > "$RUNNER_TEMP/chromedriver.pid"
+
+      - name: Run PHPUnit
+        working-directory: ${{ runner.temp }}/drupal
+        env:
+          SIMPLETEST_BASE_URL: http://127.0.0.1:8080
+          SIMPLETEST_DB: sqlite://localhost/${{ runner.temp }}/drupal/web/sites/default/files/db.sqlite?module=sqlite
+          BROWSERTEST_OUTPUT_DIRECTORY: ${{ runner.temp }}/drupal/web/sites/simpletest/browser_output
+          MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome", "goog:chromeOptions":{"w3c":true, "args":["--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://127.0.0.1:9515"]'
+        run: |
+          ./vendor/bin/phpunit \
+            -c web/core \
+            web/modules/custom/nome_modulo/tests/src/Unit \
+            web/modules/custom/nome_modulo/tests/src/Kernel \
+            web/modules/custom/nome_modulo/tests/src/Functional \
+            web/modules/custom/nome_modulo/tests/src/FunctionalJavascript
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== PHP server ==="
+          cat "$RUNNER_TEMP/php-server.log" || true
+
+          echo "=== ChromeDriver ==="
+          cat "$RUNNER_TEMP/chromedriver.log" || true
